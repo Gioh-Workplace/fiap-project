@@ -1,4 +1,4 @@
-name: CI - Node.js API
+name: CI - Testes Node.js
 
 on:
   push:
@@ -7,20 +7,25 @@ on:
     branches: [ "main", "master" ]
 
 jobs:
-  build-and-test:
+  test:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18]
 
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Configurar Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
 
       - name: Instalar dependências
         run: npm install
 
-      - name: Rodar testes com cobertura
+      - name: Rodar testes
         run: npm test
