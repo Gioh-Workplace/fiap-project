@@ -1,9 +1,26 @@
-import "dotenv/config";
-import app from "./src/app.js";
+import app from "./app.js";
+import conectDatabase from "./config/dbConnect.js";
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-app.listen(PORT,() => {
-    console.log(`Servidor aberto`);
-    
-});
+async function startServer() {
+  try {
+    const connect = await conectDatabase();
+
+    connect.on("error", (erro) => {
+      console.error("Erro de conexão", erro);
+    });
+
+    connect.once("open", () => {
+      console.log("Conexão com MongoDB feita com sucesso");
+    });
+
+    app.listen(PORT, () => {
+      console.log(`Servidor rodando na porta ${PORT}`);
+    });
+  } catch (error) {
+    console.error("Erro ao iniciar servidor", error);
+  }
+}
+
+startServer();
