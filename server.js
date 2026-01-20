@@ -1,19 +1,18 @@
-import app from "./app.js";
-import conectDatabase from "./config/dbConnect.js";
+import app from "./src/app.js";
+import conectDatabase from "./src/config/dbConnect.js";
 
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    const connect = await conectDatabase();
+    await conectDatabase();
+    console.log("Conexão com MongoDB feita com sucesso");
 
-    connect.on("error", (erro) => {
-      console.error("Erro de conexão", erro);
-    });
-
-    connect.once("open", () => {
-      console.log("Conexão com MongoDB feita com sucesso");
-    });
+    if (process.env.NODE_ENV === "development") {
+      const { seedPosts } = await import("./src/seeds/postSeeds.js");
+      await seedPosts();
+      console.log("Seed executado com sucesso");
+    }
 
     app.listen(PORT, () => {
       console.log(`Servidor rodando na porta ${PORT}`);
