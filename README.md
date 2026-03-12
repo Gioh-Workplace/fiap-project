@@ -203,8 +203,3 @@ Pipeline configurado em:
 
 Projeto desenvolvido para fins acadêmicos no curso da **FIAP**, com foco em backend moderno, testes e DevOps.
 
-
-* Escrever uma seção “Como rodar os testes no CI”
-* Revisar para padrões de entrega FIAP
-
-Só me dizer.
