@@ -13,6 +13,7 @@
   "author": "Giovani",
   "license": "ISC",
   "dependencies": {
+    "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^4.18.1",
     "mongodb": "^7.0.0",
