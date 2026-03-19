@@ -16,8 +16,8 @@ const PostSchema = new mongoose.Schema(
 
     autor: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // ou "Aluno"
-      required: true
+      ref: "User", 
+      required: false //Atualização temporária para facilitar testes no front
     },
 
     status: {

@@ -57,6 +57,7 @@ class PostController {
       res.status(201).json(novoPost);
 
     } catch {
+      console.error(error)
       res.status(500).json({ message: "Erro ao cadastrar post" });
     }
   }
@@ -73,6 +74,7 @@ class PostController {
       res.status(200).json({ message: "Atualizado com sucesso" });
 
     } catch {
+      console.error(error)
       res.status(500).json({ message: "Erro ao atualizar post" });
     }
   }
@@ -89,6 +91,7 @@ class PostController {
       res.status(200).json({ message: "Post deletado com sucesso" });
 
     } catch {
+      console.error(error)
       res.status(500).json({ message: "Erro ao deletar post" });
     }
   }

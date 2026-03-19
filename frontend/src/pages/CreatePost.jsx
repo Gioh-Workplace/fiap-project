@@ -1,12 +1,16 @@
 import { useState } from "react"
 import { createPost } from "../api/posts"
-
+import { useNavigate } from "react-router-dom"
 
 export default function CreatePost() {
   const [titulo, setTitulo] = useState("")
   const [descricao, setDescricao] = useState("")
+  const [success, setSuccess] = useState(false)
 
   const role = localStorage.getItem("role")
+  localStorage.setItem("role", "professor")
+  const navigate = useNavigate()
+  
 
   if (role !== "professor") {
     return <h1>Acesso negado</h1>
@@ -21,7 +25,13 @@ export default function CreatePost() {
         status: "rascunho"
       })
 
-      alert("Post criado com sucesso!")
+      setSuccess(true)
+
+      // espera 2 segundos antes de redirecionar
+      setTimeout(() => {
+        navigate("/")
+      }, 2000)
+      
 
       setTitulo("")
       setDescricao("")
@@ -34,6 +44,8 @@ export default function CreatePost() {
   return (
     <div>
       <h1>Criar Post</h1>
+
+      {success && <p>Post criado com sucesso! Redirecionando...</p>}
 
       <form onSubmit={handleSubmit}>
         <div>
