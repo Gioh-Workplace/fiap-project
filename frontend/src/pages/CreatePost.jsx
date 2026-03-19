@@ -1,6 +1,75 @@
 import { useState } from "react"
 import { createPost } from "../api/posts"
 import { useNavigate } from "react-router-dom"
+import styled from "styled-components"
+
+const Container = styled.div`
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 20px;
+`
+
+const Title = styled.h1`
+  text-align: center;
+  margin-bottom: 20px;
+`
+
+const FormCard = styled.div`
+  background: #fff3cd;
+  padding: 25px;
+  border-radius: 10px;
+
+  box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
+  transform: rotate(-1deg);
+`
+
+const Input = styled.input`
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+`
+
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 10px;
+  min-height: 120px;
+  border-radius: 5px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  resize: none;
+`
+
+const Button = styled.button`
+  margin-top: 15px;
+  width: 100%;
+  padding: 12px;
+  background: ${({ theme }) => theme.colors.primary};
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.primaryDark};
+  }
+`
+
+const BackButton = styled.button`
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 5px;
+  cursor: pointer;
+`
+
+const SuccessMessage = styled.p`
+  color: green;
+  text-align: center;
+  margin-bottom: 10px;
+`
 
 export default function CreatePost() {
   const [titulo, setTitulo] = useState("")
@@ -8,13 +77,12 @@ export default function CreatePost() {
   const [success, setSuccess] = useState(false)
 
   const role = localStorage.getItem("role")
-  localStorage.setItem("role", "professor")
   const navigate = useNavigate()
-  
 
   if (role !== "professor") {
     return <h1>Acesso negado</h1>
   }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
 
@@ -27,46 +95,44 @@ export default function CreatePost() {
 
       setSuccess(true)
 
-      // espera 2 segundos antes de redirecionar
       setTimeout(() => {
         navigate("/")
-      }, 2000)
-      
+      }, 1500)
 
-      setTitulo("")
-      setDescricao("")
     } catch (error) {
       console.error("Erro ao criar post:", error)
       alert("Erro ao criar post")
     }
   }
- 
+
   return (
-    <div>
-      <h1>Criar Post</h1>
+    <Container>
+      <Title>Novo Post</Title>
 
-      {success && <p>Post criado com sucesso! Redirecionando...</p>}
+      <FormCard>
+        {success && <SuccessMessage>Post criado com sucesso!</SuccessMessage>}
 
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Título:</label>
-          <input
+        <form onSubmit={handleSubmit}>
+          <Input
             type="text"
+            placeholder="Título"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
           />
-        </div>
 
-        <div>
-          <label>Descrição:</label>
-          <textarea
+          <TextArea
+            placeholder="Descrição"
             value={descricao}
             onChange={(e) => setDescricao(e.target.value)}
           />
-        </div>
 
-        <button type="submit">Criar</button>
-      </form>
-    </div>
+          <Button type="submit">Criar Post</Button>
+        </form>
+
+        <BackButton onClick={() => navigate("/")}>
+          Voltar
+        </BackButton>
+      </FormCard>
+    </Container>
   )
 }
