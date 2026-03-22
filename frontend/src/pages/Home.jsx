@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { getPosts } from "../api/posts"
 import styled from "styled-components"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 const Container = styled.div`
   max-width: 1400px;
@@ -108,7 +109,7 @@ export default function Home() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const role = localStorage.getItem("role") || "aluno"
+  const { role } = useAuth()
 
   useEffect(() => {
     async function fetchPosts() {

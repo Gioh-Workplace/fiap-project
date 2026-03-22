@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { createPost } from "../api/posts"
 import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 import styled from "styled-components"
 
 const Container = styled.div`
@@ -76,7 +77,7 @@ export default function CreatePost() {
   const [descricao, setDescricao] = useState("")
   const [success, setSuccess] = useState(false)
 
-  const role = localStorage.getItem("role")
+  const { role } = useAuth()
   const navigate = useNavigate()
 
   if (role !== "professor") {
