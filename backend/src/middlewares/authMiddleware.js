@@ -1,19 +1,7 @@
-import { ROLES } from "../constants/roles.js";
+
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-export function mockAuth(req, res, next) {
-  const role = req.headers["x-user-role"];
-
-  if (!role) {
-    return res.status(401).json({
-      message: "Role não informada"
-    });
-  }
-
-  req.user = { role };
-  next();
-}
 
 export async function auth(req, res, next) {
   try {

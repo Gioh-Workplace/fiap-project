@@ -113,7 +113,11 @@ export default function Navbar() {
         <Right>
           <RoleBadge>{roleLabel}</RoleBadge>
           <UserIcon>{userInitial}</UserIcon>
-          <NavButton onClick={handleLogout}>Sair</NavButton>
+          <NavButton onClick={() => {logout()
+          navigate("/login")
+          }}>
+          Sair
+        </NavButton>
         </Right>
       </BarContent>
     </Bar>
