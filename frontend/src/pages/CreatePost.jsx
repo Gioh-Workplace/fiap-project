@@ -8,6 +8,11 @@ const Container = styled.div`
   max-width: 600px;
   margin: 60px auto;
   padding: 20px;
+
+  @media (max-width: 768px) {
+    margin: 24px auto;
+    padding: 12px;
+  }
 `
 
 const Title = styled.h1`
@@ -22,6 +27,11 @@ const FormCard = styled.div`
 
   box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
   transform: rotate(-1deg);
+
+  @media (max-width: 768px) {
+    transform: none;
+    padding: 18px;
+  }
 `
 
 const Input = styled.input`

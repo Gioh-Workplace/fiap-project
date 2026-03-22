@@ -10,25 +10,42 @@ const Bar = styled.header`
 `
 
 const BarContent = styled.div`
-  max-width: 1400px;
+   max-width: 1400px;
   margin: 0 auto;
   padding: 14px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+  }
 `
 
 const Left = styled.div`
-  display: flex;
+   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
+
+  @media (max-width: 768px) {
+    justify-content: center;
+    width: 100%;
+  }
 `
 
 const Right = styled.div`
   display: flex;
   align-items: center;
   gap: 10px;
+  flex-wrap: wrap;
+
+   @media (max-width: 768px) {
+    justify-content: center;
+    width: 100%;
+  }
 `
 
 const Brand = styled.button`
@@ -56,6 +73,10 @@ const NavButton = styled.button`
   &:hover {
     background: ${({ primary, theme }) =>
       primary ? theme.colors.primaryDark : "#fff7ef"};
+  }
+
+  @media (max-width: 768px) {
+    flex: 1 1 auto;
   }
 `
 

@@ -22,20 +22,22 @@ const Title = styled.h1`
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  gap: 12px;
+  flex-wrap: wrap;
 `
 
 
 const Table = styled.table`
   width: 100%;
+  min-width: 900px;
   border-collapse: collapse;
-  
 `
 
 const TableWrapper = styled.div`
   background: white;
   border: 1px solid ${({ theme }) => theme.colors.border};
   border-radius: 12px;
-  overflow: hidden;
+  overflow: auto;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
 `
 

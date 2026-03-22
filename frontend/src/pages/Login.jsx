@@ -9,6 +9,15 @@ const Container = styled.div`
   height: 100vh;
   align-items: center;
   justify-content: center;
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 20px;
+
+  @media (max-width: 768px) {
+    margin: 24px auto;
+    padding: 12px;
+  }
+
 `
 
 const Card = styled.div`
@@ -20,6 +29,11 @@ const Card = styled.div`
   transform: rotate(-1deg);
   width: 100%;
   max-width: 420px;
+
+  @media (max-width: 768px) {
+    transform: none;
+    padding: 18px;
+  }
 `
 
 const Title = styled.h1`

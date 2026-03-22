@@ -10,6 +10,11 @@ const Container = styled.div`
   max-width: 900px;
   margin: 40px auto;
   padding: 0 20px;
+
+  @media (max-width: 768px) {
+    margin: 24px auto;
+    padding: 0 12px;
+  }
 `
 
 const PostWrapper = styled.div`
@@ -18,12 +23,21 @@ const PostWrapper = styled.div`
   padding: 30px;
   box-shadow: 2px 4px 14px rgba(0, 0, 0, 0.08);
   position: relative;
+
+  @media (max-width: 768px) {
+    padding: 18px;
+  }
+
 `
 
 const Title = styled.h1`
   font-size: 32px;
   margin-bottom: 16px;
   color: #333;
+
+  @media (max-width: 768px) {
+    font-size: 24px;
+  }
 `
 
 const Meta = styled.div`

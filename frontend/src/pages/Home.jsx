@@ -10,6 +10,11 @@ const Container = styled.div`
   max-width: 1400px;
   margin: 40px auto;
   padding: 0 20px;
+
+  @media (max-width: 768px) {
+    margin: 24px auto;
+    padding: 0 12px;
+  }
 `
 
 const Title = styled.h1`
@@ -94,6 +99,12 @@ const PostCard = styled.div`
     font-size: 11px;
     color: #777;
   }
+
+    @media (max-width: 768px) {
+    aspect-ratio: auto;
+    min-height: 180px;
+    padding: 12px;
+  }
 `
 
 const StatusBadge = styled.span`
@@ -149,6 +160,11 @@ const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 20px;
+
+   @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 14px;
+  }
 `
 
 const Controls = styled.div`
