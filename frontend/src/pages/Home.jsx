@@ -46,6 +46,19 @@ const PostCard = styled.div`
 
   box-shadow: 2px 4px 10px rgba(0,0,0,0.1);
   transform: rotate(-1deg);
+  position: relative;
+
+   &::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 15px;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 3px;
+  }
 
   &:hover {
     transform: rotate(0deg) scale(1.03);
@@ -74,10 +87,43 @@ const PostCard = styled.div`
   }
 
   small {
+    display: block;
+    margin-top: 8px;
     font-size: 11px;
     color: #777;
   }
 `
+
+const StatusBadge = styled.span`
+  display: inline-block;
+  align-self: flex-start;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: capitalize;
+  color: #333;
+
+  background: ${({ status }) => {
+    switch (status) {
+      case "publicado":
+        return "#d4edda"
+      case "rascunho":
+        return "#fff3cd"
+      case "arquivado":
+        return "#f8d7da"
+      default:
+        return "#eeeeee"
+    }
+  }};
+`
+const EmptyState = styled.p`
+  text-align: center;
+  color: #777;
+  font-size: 16px;
+`
+
 const colors = [
   "#fff3cd", // amarelo
   "#ffe0e0", // rosa claro
@@ -103,19 +149,22 @@ const Grid = styled.div`
   gap: 20px;
 `
 
+
+
 export default function Home() {
   const navigate = useNavigate()
+  const { role } = useAuth()
 
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const { role } = useAuth()
+  
 
   useEffect(() => {
     async function fetchPosts() {
       try {
         const response = await getPosts()
-        console.log("RESPOSTA:", response)
+        
 
         // pega o array e filtra se for aluno
         const filteredPosts =
@@ -136,21 +185,23 @@ export default function Home() {
       }
     }
 
-    fetchPosts()
+    if (role) {
+      fetchPosts()
+    }
   }, [role])
 
   if (loading) {
-    return <h1>Carregando...</h1>
+    return <EmptyState>Carregando posts...</EmptyState>
   }
 
   return (
     <Container>
-      <Title>Lista de Posts</Title>
+      <Title>Mural de Posts</Title>
   
     
   
       {posts.length === 0 ? (
-        <p>Nenhum post encontrado</p>
+        <EmptyState>Nenhum post encontrado.</EmptyState>
       ) : (
         <Grid>
  {posts.map((post, index) => (
@@ -164,9 +215,15 @@ export default function Home() {
         <p>{post.descricao}</p>
       </div>
 
-      <small>
-        {new Date(post.dtCriacao).toLocaleDateString()}
-      </small>
+      <div>
+                <StatusBadge status={post.status}>
+                  {post.status}
+                </StatusBadge>
+            
+                  <small>
+                    {new Date(post.dtCriacao).toLocaleDateString()}
+                  </small>
+      </div>
     </PostCard>
   ))}
 </Grid>
