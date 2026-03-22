@@ -186,6 +186,13 @@ const FilterSelect = styled.select`
     border-color: ${({ theme }) => theme.colors.primary};
   }
 `
+const AuthorText = styled.small`
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: #666;
+  font-weight: 600;
+`
 
 
 export default function Home() {
@@ -300,6 +307,9 @@ export default function Home() {
       <div>
         <h2>{post.titulo}</h2>
         <p>{post.descricao}</p>
+        <AuthorText>
+        Por {post.autor?.nome || post.autor?.name || "Autor desconhecido"}
+      </AuthorText>
       </div>
 
       <div>

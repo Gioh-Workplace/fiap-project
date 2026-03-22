@@ -131,6 +131,11 @@ const DangerButton = styled.button`
   }
 `
 
+const AuthorText = styled.span`
+  font-size: 14px;
+  color: #666;
+`
+
 export default function Post() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -231,6 +236,10 @@ export default function Post() {
 
         <Meta>
           <StatusBadge status={post.status}>{post.status}</StatusBadge>
+
+          <AuthorText>
+          Por {post.autor?.nome || post.autor?.name || "Autor desconhecido"}
+        </AuthorText>
 
           {post.dtCriacao && (
             <DateText>
