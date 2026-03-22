@@ -5,7 +5,13 @@ export const getPosts = async () => {
   return response.data
 }
 
+export const getPostById = async (id) => {
+  const response = await api.get(`/posts/${id}`)
+  return response.data
+}
+
 export const createPost = async (postData) => {
   const response = await api.post("/post", postData)
   return response.data
 }
+
