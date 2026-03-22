@@ -95,7 +95,6 @@ export default function EditPost() {
   const [descricao, setDescricao] = useState("")
   const [status, setStatus] = useState("rascunho")
   const [loading, setLoading] = useState(true)
-  const [success, setSuccess] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -135,11 +134,15 @@ export default function EditPost() {
         status
       })
 
-      setSuccess(true)
+      navigate("/", {
+        state: {
+          toast: {
+            type: "success",
+            message: "Post editado com sucesso."
+          }
+        }
+      })
 
-      setTimeout(() => {
-        navigate(`/post/${id}`)
-      }, 1200)
     } catch (err) {
       console.error("Erro ao atualizar post:", err)
       setError("Erro ao atualizar post.")
@@ -155,7 +158,7 @@ export default function EditPost() {
       <Title>Editar Post</Title>
 
       <FormCard>
-        {success && <Message>Post atualizado com sucesso!</Message>}
+      
         {error && <ErrorMessage>{error}</ErrorMessage>}
 
         <form onSubmit={handleSubmit}>

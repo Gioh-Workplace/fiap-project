@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import { getPosts } from "../api/posts"
 import styled from "styled-components"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import Toast from "../components/Toast"
+
 
 const Container = styled.div`
   max-width: 1400px;
@@ -154,11 +156,24 @@ const Grid = styled.div`
 export default function Home() {
   const navigate = useNavigate()
   const { role } = useAuth()
+  const location = useLocation()
 
+  const [toast, setToast] = useState(null)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
 
-  
+  useEffect(() => {
+  if (location.state?.toast) {
+    setToast(location.state.toast)
+
+    const timer = setTimeout(() => {
+      setToast(null)
+      navigate(location.pathname, { replace: true, state: {} })
+    }, 2500)
+
+    return () => clearTimeout(timer)
+  }
+}, [location, navigate])
 
   useEffect(() => {
     async function fetchPosts() {
@@ -228,6 +243,7 @@ export default function Home() {
   ))}
 </Grid>
       )}
+      <Toast message={toast?.message} type={toast?.type} />
     </Container>
   )
 }

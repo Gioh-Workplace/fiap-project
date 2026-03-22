@@ -66,16 +66,10 @@ const BackButton = styled.button`
   cursor: pointer;
 `
 
-const SuccessMessage = styled.p`
-  color: green;
-  text-align: center;
-  margin-bottom: 10px;
-`
 
 export default function CreatePost() {
   const [titulo, setTitulo] = useState("")
   const [descricao, setDescricao] = useState("")
-  const [success, setSuccess] = useState(false)
 
   const { role } = useAuth()
   const navigate = useNavigate()
@@ -94,11 +88,14 @@ export default function CreatePost() {
         status: "rascunho"
       })
 
-      setSuccess(true)
-
-      setTimeout(() => {
-        navigate("/")
-      }, 1500)
+      navigate("/", {
+        state: {
+          toast: {
+            type: "success",
+            message: "Post criado com sucesso."
+          }
+        }
+      })
 
     } catch (error) {
       console.error("Erro ao criar post:", error)
@@ -111,7 +108,6 @@ export default function CreatePost() {
       <Title>Novo Post</Title>
 
       <FormCard>
-        {success && <SuccessMessage>Post criado com sucesso!</SuccessMessage>}
 
         <form onSubmit={handleSubmit}>
           <Input

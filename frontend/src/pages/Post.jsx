@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import styled from "styled-components"
-import { getPostById } from "../api/posts"
+import { getPostById,deletePost } from "../api/posts"
 import { useAuth } from "../context/AuthContext"
+import ConfirmModal from "../components/ConfirmModal"
+
 
 const Container = styled.div`
   max-width: 900px;
@@ -114,6 +116,21 @@ const ActionButton = styled.button`
   }
 `
 
+const DangerButton = styled.button`
+  padding: 10px 16px;
+  background: #c0392b;
+  color: white;
+  border: 1px solid #c0392b;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: #a93226;
+    border-color: #a93226;
+  }
+`
+
 export default function Post() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -121,6 +138,28 @@ export default function Post() {
 
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+
+
+  const handleDelete = async () => {
+    try {
+      setShowDeleteModal(false)
+  
+      await deletePost(id)
+  
+      navigate("/", {
+        state: {
+          toast: {
+            type: "success",
+            message: "Post excluído com sucesso."
+          }
+        }
+      })
+    } catch (error) {
+      console.error("Erro ao excluir post:", error)
+    }
+  }
+  
 
   useEffect(() => {
     async function fetchPost() {
@@ -161,11 +200,17 @@ export default function Post() {
       <Actions>
         <ActionButton onClick={() => navigate("/")}>Voltar</ActionButton>
 
-            {role === "professor" && (
-              <ActionButton primary onClick={() => navigate(`/edit/${id}`)}>
-                Editar
-              </ActionButton>
-            )}
+        {role === "professor" && (
+    <>
+      <ActionButton primary onClick={() => navigate(`/edit/${id}`)}>
+        Editar
+      </ActionButton>
+
+      <DangerButton onClick={() => setShowDeleteModal(true)}>
+        Excluir
+      </DangerButton>
+    </>
+  )}
       </Actions>
 
       <PostWrapper>
@@ -189,6 +234,17 @@ export default function Post() {
 
         <Content>{post.descricao}</Content>
       </PostWrapper>
+      {showDeleteModal && (
+      <ConfirmModal
+        title="Excluir post"
+        message="Tem certeza que deseja excluir este post? Essa ação não poderá ser desfeita."
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        onConfirm={handleDelete}
+        onCancel={() => setShowDeleteModal(false)}
+      />
+    )}
+
     </Container>
   )
 }
