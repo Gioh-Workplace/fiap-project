@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import styled from "styled-components"
 import { getPostById } from "../api/posts"
+import { useAuth } from "../context/AuthContext"
 
 const Container = styled.div`
   max-width: 900px;
@@ -88,9 +89,35 @@ const Message = styled.p`
   font-size: 16px;
 `
 
+const Actions = styled.div`
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+`
+
+const ActionButton = styled.button`
+  padding: 10px 16px;
+  background: ${({ primary, theme }) =>
+    primary ? theme.colors.primary : theme.colors.white};
+  color: ${({ primary, theme }) =>
+    primary ? theme.colors.white : theme.colors.text};
+  border: 1px solid
+    ${({ primary, theme }) =>
+      primary ? theme.colors.primary : theme.colors.border};
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+
+  &:hover {
+    background: ${({ primary, theme }) =>
+      primary ? theme.colors.primaryDark : "#fff7ef"};
+  }
+`
+
 export default function Post() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const { role } = useAuth()
 
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -131,7 +158,15 @@ export default function Post() {
 
   return (
     <Container>
-      <BackButton onClick={() => navigate("/")}>Voltar</BackButton>
+      <Actions>
+        <ActionButton onClick={() => navigate("/")}>Voltar</ActionButton>
+
+            {role === "professor" && (
+              <ActionButton primary onClick={() => navigate(`/edit/${id}`)}>
+                Editar
+              </ActionButton>
+            )}
+      </Actions>
 
       <PostWrapper>
         <Title>{post.titulo}</Title>

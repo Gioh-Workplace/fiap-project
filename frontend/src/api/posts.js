@@ -15,3 +15,7 @@ export const createPost = async (postData) => {
   return response.data
 }
 
+export const updatePost = async (id, postData) => {
+  const response = await api.put(`/post/${id}`, postData)
+  return response.data
+}
