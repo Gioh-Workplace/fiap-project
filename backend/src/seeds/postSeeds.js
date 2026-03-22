@@ -14,7 +14,7 @@ export async function seedPosts() {
     {
         titulo: "Post de teste",
         descricao: "Funcionando com Docker",
-        autor: "66cfa3d2b8e4f1a123456789",
+        autor: "69c03d67a0dd7a76c4ead689",
         status: "publicado",
         dtCriacao: "2026-01-19T02:52:00.474Z",
         dtAtualizacao: "2026-01-19T02:52:00.474Z",
@@ -23,7 +23,7 @@ export async function seedPosts() {
     {
         titulo: "Anotações de aula 2024",
         descricao: "Material desatualizado, mantido apenas para histórico.",
-        autor: "66cfa3d2b8e4f1a123456789",
+        autor: "69c03d67a0dd7a76c4ead689",
         status: "arquivado",
         dtCriacao: "2026-01-19T02:51:11.971Z",
         dtAtualizacao: "2026-01-19T02:51:11.971Z",
