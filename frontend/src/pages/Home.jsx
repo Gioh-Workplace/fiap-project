@@ -147,11 +147,7 @@ export default function Home() {
     <Container>
       <Title>Lista de Posts</Title>
   
-      {role === "professor" && (
-        <Button onClick={() => navigate("/create")}>
-          Criar Post
-        </Button>
-      )}
+    
   
       {posts.length === 0 ? (
         <p>Nenhum post encontrado</p>
