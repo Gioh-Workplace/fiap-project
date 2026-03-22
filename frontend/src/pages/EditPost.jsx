@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams,useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { getPostById, updatePost } from "../api/posts"
 import { useAuth } from "../context/AuthContext"
@@ -97,6 +97,9 @@ export default function EditPost() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
 
+  const location = useLocation()
+  const returnTo = location.state?.returnTo || `/post/${id}`
+
   useEffect(() => {
     async function fetchPost() {
       try {
@@ -134,7 +137,7 @@ export default function EditPost() {
         status
       })
 
-      navigate("/", {
+      navigate(returnTo, {
         state: {
           toast: {
             type: "success",
@@ -191,7 +194,7 @@ export default function EditPost() {
           <Button type="submit">Salvar Alterações</Button>
         </form>
 
-        <SecondaryButton onClick={() => navigate(`/post/${id}`)}>
+        <SecondaryButton onClick={() => navigate(returnTo)}>
           Cancelar
         </SecondaryButton>
       </FormCard>

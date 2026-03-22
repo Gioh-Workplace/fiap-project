@@ -102,9 +102,6 @@ export default function Navbar() {
 
           {role === "professor" && (
             <>
-            <NavButton primary onClick={() => navigate("/create")}>
-              Criar Post
-            </NavButton>
             
             <NavButton onClick={() => navigate("/admin")}>
             Admin

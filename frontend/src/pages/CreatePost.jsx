@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { createPost } from "../api/posts"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import styled from "styled-components"
 
@@ -73,6 +73,8 @@ export default function CreatePost() {
 
   const { role } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = location.state?.returnTo || "/"
 
   if (role !== "professor") {
     return <h1>Acesso negado</h1>
@@ -88,7 +90,7 @@ export default function CreatePost() {
         status: "rascunho"
       })
 
-      navigate("/", {
+      navigate(returnTo, {
         state: {
           toast: {
             type: "success",
@@ -133,7 +135,7 @@ export default function CreatePost() {
           <Button type="submit">Criar Post</Button>
         </form>
 
-        <BackButton onClick={() => navigate("/")}>
+        <BackButton onClick={() => navigate(returnTo)}>
           Voltar
         </BackButton>
       </FormCard>

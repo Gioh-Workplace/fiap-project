@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, useLocation } from "react-router-dom"
 import styled from "styled-components"
 import { getPostById,deletePost } from "../api/posts"
 import { useAuth } from "../context/AuthContext"
@@ -139,7 +139,8 @@ export default function Post() {
   const [post, setPost] = useState(null)
   const [loading, setLoading] = useState(true)
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-
+  const location = useLocation()
+  const returnTo = location.state?.returnTo || "/"
 
   const handleDelete = async () => {
     try {
@@ -206,13 +207,17 @@ export default function Post() {
   return (
     <Container>
       <Actions>
-        <ActionButton onClick={() => navigate("/")}>Voltar</ActionButton>
+      <ActionButton onClick={() => navigate(returnTo)}>Voltar</ActionButton>
 
         {role === "professor" && (
     <>
-      <ActionButton primary onClick={() => navigate(`/edit/${id}`)}>
-        Editar
-      </ActionButton>
+      <ActionButton primary onClick={() => navigate(`/edit/${id}`, {
+      state: { returnTo }
+    })
+  }
+>
+  Editar
+</ActionButton>
 
       <DangerButton onClick={() => setShowDeleteModal(true)}>
         Excluir
