@@ -97,13 +97,19 @@ export default function Navbar() {
     <Bar>
       <BarContent>
         <Left>
-          <Brand onClick={() => navigate("/")}>BlogBoard</Brand>
-          <NavButton onClick={() => navigate("/")}>Home</NavButton>
+          <Brand onClick={() => navigate("/")}>Fiap-Blog</Brand>
+      
 
           {role === "professor" && (
+            <>
             <NavButton primary onClick={() => navigate("/create")}>
               Criar Post
             </NavButton>
+            
+            <NavButton onClick={() => navigate("/admin")}>
+            Admin
+            </NavButton>
+            </>
           )}
         </Left>
 
