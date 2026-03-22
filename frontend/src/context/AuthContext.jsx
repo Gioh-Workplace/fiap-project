@@ -1,33 +1,44 @@
-import { createContext, useContext, useState, useEffect } from "react"
+import { createContext, useContext, useEffect, useState } from "react"
 
 const AuthContext = createContext()
 
 export function AuthProvider({ children }) {
-  const [role, setRole] = useState(null)
+  const [user, setUser] = useState(null)
+  const [token, setToken] = useState(null)
 
-  // carregar role do localStorage ao iniciar
   useEffect(() => {
-    const storedRole = localStorage.getItem("role")
-    if (storedRole) {
-      setRole(storedRole)
+    const storedUser = localStorage.getItem("user")
+    const storedToken = localStorage.getItem("token")
+
+    if (storedUser && storedToken) {
+      setUser(JSON.parse(storedUser))
+      setToken(storedToken)
     }
   }, [])
 
-  const login = (userRole) => {
-    localStorage.setItem("role", userRole)
-    setRole(userRole)
+  const login = ({ user, token }) => {
+    localStorage.setItem("user", JSON.stringify(user))
+    localStorage.setItem("token", token)
+
+    setUser(user)
+    setToken(token)
   }
 
   const logout = () => {
-    localStorage.removeItem("role")
-    setRole(null)
+    localStorage.removeItem("user")
+    localStorage.removeItem("token")
+
+    setUser(null)
+    setToken(null)
   }
 
   return (
     <AuthContext.Provider
       value={{
-        role,
-        isAuthenticated: !!role,
+        user,
+        token,
+        role: user?.role || null,
+        isAuthenticated: !!token,
         login,
         logout
       }}
@@ -37,7 +48,6 @@ export function AuthProvider({ children }) {
   )
 }
 
-// hook customizado
 export function useAuth() {
   return useContext(AuthContext)
 }

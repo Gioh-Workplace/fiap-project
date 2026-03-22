@@ -29,7 +29,7 @@ const PostSchema = new mongoose.Schema(
   {
     timestamps: {
       createdAt: "dtCriacao",
-      updatedAt: "dtAtualizacao"  
+      updatedAt: "dtAtualizacao"
     }
   }
 );

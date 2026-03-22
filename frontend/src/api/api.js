@@ -5,10 +5,10 @@ export const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const role = localStorage.getItem("role")
+  const token = localStorage.getItem("token")
 
-  if (role) {
-    config.headers["x-user-role"] = role
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
   }
 
   return config
