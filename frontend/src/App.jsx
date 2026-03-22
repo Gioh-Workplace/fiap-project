@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
+import ProtectedRoute from "./routes/ProtectedRoute"
 
 import Home from "./pages/Home"
 import Post from "./pages/Post"
@@ -12,13 +13,13 @@ function App() {
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Home />} />
-        <Route path="/post/:id" element={<Post />} />
+        <Route path="/" element={<ProtectedRoute> <Home /></ProtectedRoute>}/>
+        <Route path="/post/:id"  element={<ProtectedRoute> <Post /> </ProtectedRoute>} />
 
-        <Route path="/create" element={<CreatePost />} />
-        <Route path="/edit/:id" element={<EditPost />} />
+        <Route path="/create"  element={<ProtectedRoute> <CreatePost /> </ProtectedRoute>} />
+        <Route path="/edit/:id"  element={<ProtectedRoute> <EditPost /> </ProtectedRoute>} />
 
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin"  element={<ProtectedRoute> <Admin /> </ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
 
       </Routes>
