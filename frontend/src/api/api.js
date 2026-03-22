@@ -5,7 +5,11 @@ export const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const role = localStorage.getItem("role") || "aluno"
-  config.headers["x-user-role"] = role
+  const role = localStorage.getItem("role")
+
+  if (role) {
+    config.headers["x-user-role"] = role
+  }
+
   return config
 })
