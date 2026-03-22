@@ -151,6 +151,41 @@ const Grid = styled.div`
   gap: 20px;
 `
 
+const Controls = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+`
+
+const SearchInput = styled.input`
+  flex: 1;
+  min-width: 240px;
+  padding: 12px 14px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 10px;
+  background: ${({ theme }) => theme.colors.white};
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`
+
+const FilterSelect = styled.select`
+  min-width: 180px;
+  padding: 12px 14px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  border-radius: 10px;
+  background: ${({ theme }) => theme.colors.white};
+  font-size: 14px;
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary};
+  }
+`
 
 
 export default function Home() {
@@ -161,6 +196,9 @@ export default function Home() {
   const [toast, setToast] = useState(null)
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [statusFilter, setStatusFilter] = useState("todos")
+
 
   useEffect(() => {
   if (location.state?.toast) {
@@ -182,14 +220,14 @@ export default function Home() {
         
 
         // pega o array e filtra se for aluno
-        const filteredPosts =
-          role === "aluno"
-            ? response.data.filter(post => post.status === "publicado")
-            : response.data
+        const roleFilteredPosts =
+        role === "aluno"
+          ? response.data.filter((post) => post.status === "publicado")
+          : response.data
 
-            const sortedPosts = filteredPosts.sort(
-              (a, b) => new Date(b.dtCriacao) - new Date(a.dtCriacao)
-            )
+      const sortedPosts = roleFilteredPosts.sort(
+        (a, b) => new Date(b.dtCriacao) - new Date(a.dtCriacao)
+      )
             
 
         setPosts(sortedPosts)
@@ -209,17 +247,51 @@ export default function Home() {
     return <EmptyState>Carregando posts...</EmptyState>
   }
 
+  const visiblePosts = posts.filter((post) => {
+    const matchesSearch =
+      post.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      post.descricao.toLowerCase().includes(searchTerm.toLowerCase())
+  
+    const matchesStatus =
+      role !== "professor" || statusFilter === "todos"
+        ? true
+        : post.status === statusFilter
+  
+    return matchesSearch && matchesStatus
+  })
+
+
   return (
     <Container>
       <Title>Mural de Posts</Title>
   
+      <Controls>
+  <SearchInput
+    type="text"
+    placeholder="Buscar por título ou descrição..."
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+  />
+
+  {role === "professor" && (
+    <FilterSelect
+      value={statusFilter}
+      onChange={(e) => setStatusFilter(e.target.value)}
+    >
+      <option value="todos">Todos os status</option>
+      <option value="publicado">Publicado</option>
+      <option value="rascunho">Rascunho</option>
+      <option value="arquivado">Arquivado</option>
+    </FilterSelect>
+  )}
+</Controls>
     
   
-      {posts.length === 0 ? (
+      {visiblePosts.length === 0 ? (
         <EmptyState>Nenhum post encontrado.</EmptyState>
       ) : (
         <Grid>
- {posts.map((post, index) => (
+ {visiblePosts.map((post, index) => (
   <PostCard
     key={post._id}
     bg={colors[index % colors.length]}
