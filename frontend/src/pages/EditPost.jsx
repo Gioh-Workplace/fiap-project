@@ -145,7 +145,14 @@ export default function EditPost() {
 
     } catch (err) {
       console.error("Erro ao atualizar post:", err)
-      setError("Erro ao atualizar post.")
+      navigate("/", {
+        state: {
+          toast: {
+            type: "error",
+            message: "Erro ao editar post."
+          }
+        }
+      })
     }
   }
 

@@ -99,7 +99,14 @@ export default function CreatePost() {
 
     } catch (error) {
       console.error("Erro ao criar post:", error)
-      alert("Erro ao criar post")
+      navigate("/", {
+        state: {
+          toast: {
+            type: "error",
+            message: "Erro ao criar post."
+          }
+        }
+      })
     }
   }
 

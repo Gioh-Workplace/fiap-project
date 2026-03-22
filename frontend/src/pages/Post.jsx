@@ -157,6 +157,14 @@ export default function Post() {
       })
     } catch (error) {
       console.error("Erro ao excluir post:", error)
+      navigate("/", {
+        state: {
+          toast: {
+            type: "error",
+            message: "Erro ao excluir post."
+          }
+        }
+      })
     }
   }
   
