@@ -1,8 +1,24 @@
+import { jest } from "@jest/globals";
 import request from "supertest";
-import app from "../app.js";
+
+await jest.unstable_mockModule(
+  "../middlewares/authMiddleware.js",
+  () => import("./__mocks__/authMiddleware.mock.js")
+);
+
+await jest.unstable_mockModule(
+  "../middlewares/authorizeRole.js",
+  () => import("./__mocks__/authorizeRole.mock.js")
+);
+
+await jest.unstable_mockModule(
+  "../controllers/postController.js",
+  () => import("./__mocks__/postController.mock.js")
+);
+
+const { default: app } = await import("../app.js");
 
 describe("Posts API", () => {
-
   it("Professor consegue criar post", async () => {
     const res = await request(app)
       .post("/post")
@@ -24,5 +40,4 @@ describe("Posts API", () => {
     expect(res.statusCode).toBe(200);
     expect(res.body.total).toBe(1);
   });
-
 });
