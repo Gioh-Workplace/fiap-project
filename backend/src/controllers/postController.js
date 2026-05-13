@@ -3,6 +3,7 @@ import { ROLES } from "../constants/roles.js";
 import { POST_STATUS } from "../constants/postStatus.js";
 import { validarObjectId } from "../utils/validators.js";
 import { validarStatusPost, alunoPodeVerPost } from "../utils/postValidators.js";
+import { successResponse, errorResponse } from "../utils/apiResponse.js";
 
 class PostController {
 
@@ -17,10 +18,12 @@ class PostController {
       const posts = await post.find(filtro).populate("autor", "nome email role");
       const total = await post.countDocuments(filtro);
 
-      res.status(200).json({ total, data: posts });
+      return successResponse(res, 200, "Posts listados com sucesso.", posts, {
+        total,
+      });
 
     } catch {
-      res.status(500).json({ message: "Erro ao listar posts" });
+      return errorResponse(res, 500, "Erro ao listar posts");
     }
   }
 
@@ -31,26 +34,24 @@ class PostController {
       const postagem = await post.findById(id).populate("autor", "nome email role");;
   
       if (!postagem) {
-        return res.status(404).json({ message: "Post não encontrado" });
+        return errorResponse(res, 404, "Post não encontrado.");
       }
   
       if (!alunoPodeVerPost(req.user?.role, postagem.status)) {
-        return res.status(403).json({
-          message: "Você não tem permissão para acessar este post"
-        });
+        return errorResponse(res, 403, "Você não tem permissão para acessar este post.");
       }
   
-      return res.json(postagem);
+      return successResponse(res, 200, "Post encontrado com sucesso.", postagem);
   
     } catch (error) {
-      return res.status(500).json({ message: "Erro ao buscar post" });
+      return errorResponse(res, 500, "Erro ao buscar post.");
     }
   }
 
   static async cadastrarPost(req, res) {
     try {
       if (!validarStatusPost(req.body.status)) {
-        return res.status(400).json({ message: "Status inválido" });
+        return errorResponse(res, 400, "Status inválido.");
       }
 
       const novoPost = await post.create({
@@ -60,18 +61,18 @@ class PostController {
         autor: req.user._id
       });
 
-      res.status(201).json(novoPost);
+      return successResponse(res, 201, "Post cadastrado com sucesso.", novoPost);
 
-    } catch {
+    } catch (error) {
       console.error(error)
-      res.status(500).json({ message: "Erro ao cadastrar post" });
+      return errorResponse(res, 500, "Erro ao cadastrar post.");
     }
   }
 
   static async atualizarPost(req, res) {
     try {
       if (req.body.status && !validarStatusPost(req.body.status)) {
-        return res.status(400).json({ message: "Status inválido" });
+        return errorResponse(res, 400, "Status inválido.");
       }
   
       const postAtualizado = await post.findByIdAndUpdate(
@@ -85,13 +86,14 @@ class PostController {
       ).populate("autor", "nome email role");
   
       if (!postAtualizado) {
-        return res.status(404).json({ message: "Post não encontrado" });
+        return errorResponse(res, 404, "Post não encontrado.");
       }
   
-      res.status(200).json(postAtualizado);
+      return successResponse(res, 200, "Post atualizado com sucesso.", postAtualizado);
+
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Erro ao atualizar post" });
+      return errorResponse(res, 500, "Erro ao atualizar post.");
     }
   }
 
@@ -100,15 +102,20 @@ class PostController {
       const { id } = req.params;
 
       if (!validarObjectId(id)) {
-        return res.status(400).json({ message: "ID inválido" });
+        return errorResponse(res, 400, "ID inválido.");
       }
 
-      await post.findByIdAndDelete(id);
-      res.status(200).json({ message: "Post deletado com sucesso" });
+      const postDeletado = await post.findByIdAndDelete(id);
 
-    } catch {
+      if (!postDeletado) {
+        return errorResponse(res, 404, "Post não encontrado.");
+      }
+
+      return successResponse(res, 200, "Post deletado com sucesso.");
+
+    } catch (error){
       console.error(error)
-      res.status(500).json({ message: "Erro ao deletar post" });
+      return errorResponse(res, 500, "Erro ao deletar post.");
     }
   }
 
@@ -117,9 +124,7 @@ class PostController {
       const { q } = req.query;
   
       if (!q) {
-        return res.status(400).json({
-          message: "Parâmetro de busca 'q' é obrigatório"
-        });
+        return errorResponse(res, 400, "Parâmetro de busca 'q' é obrigatório.");
       }
   
       const filtro = {
@@ -136,15 +141,13 @@ class PostController {
       const posts = await post.find(filtro).populate("autor", "nome email role");;
       const total = await post.countDocuments(filtro);
   
-      return res.status(200).json({
+      return successResponse(res, 200, "Busca realizada com sucesso.", posts, {
         total,
-        data: posts
       });
   
     } catch (error) {
-      return res.status(500).json({
-        message: "Erro ao buscar posts"
-      });
+      console.log(error);
+      return errorResponse(res, 500, "Erro ao buscar posts.");
     }
   }
 

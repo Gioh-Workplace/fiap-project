@@ -239,18 +239,16 @@ export default function Home() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await getPosts()
-        
+        const posts = await getPosts()
 
-        // pega o array e filtra se for aluno
         const roleFilteredPosts =
-        role === "aluno"
-          ? response.data.filter((post) => post.status === "publicado")
-          : response.data
+          role === "aluno"
+            ? posts.filter((post) => post.status === "publicado")
+            : posts
 
-      const sortedPosts = roleFilteredPosts.sort(
-        (a, b) => new Date(b.dtCriacao) - new Date(a.dtCriacao)
-      )
+        const sortedPosts = [...roleFilteredPosts].sort(
+          (a, b) => new Date(b.dtCriacao) - new Date(a.dtCriacao)
+        )
             
 
         setPosts(sortedPosts)

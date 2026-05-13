@@ -129,13 +129,16 @@ export default function Admin() {
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const response = await getPosts()
+        const posts = await getPosts();
 
-        const sortedPosts = [...response.data].sort(
-          (a, b) => new Date(b.dtCriacao) - new Date(a.dtCriacao)
-        )
+        const sortedPosts = [...posts].sort((a, b) => {
+          const dateA = new Date(a.dtCriacao || a.createdAt)
+          const dateB = new Date(b.dtCriacao || b.createdAt)
 
-        setPosts(sortedPosts)
+          return dateB - dateA
+        });
+
+      setPosts(sortedPosts);
       } catch (error) {
         console.error("Erro ao buscar posts:", error)
         setToast({ type: "error", message: "Erro ao carregar posts." })

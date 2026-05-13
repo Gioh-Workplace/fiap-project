@@ -114,7 +114,7 @@ export default function EditPost() {
     async function fetchPost() {
       try {
         const response = await getPostById(id)
-        const post = response.data ? response.data : response
+        const post = await getPostById(id)
 
         setTitulo(post.titulo || "")
         setDescricao(post.descricao || "")
