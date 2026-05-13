@@ -13,11 +13,11 @@ routes.get("/posts/search",auth, PostController.buscarPosts);
 
 routes.get("/posts/:id",auth, PostController.listarPostPorID)
 
-routes.post("/post",auth, authorizeRole(ROLES.PROFESSOR), PostController.cadastrarPost)
+routes.post("/posts",auth, authorizeRole(ROLES.PROFESSOR), PostController.cadastrarPost)
 
-routes.put("/post/:id",auth, authorizeRole(ROLES.PROFESSOR), PostController.atualizarPost)
+routes.put("/posts/:id",auth, authorizeRole(ROLES.PROFESSOR), PostController.atualizarPost)
 
-routes.delete("/post/:id",auth, authorizeRole(ROLES.PROFESSOR), PostController.deletarPost)
+routes.delete("/posts/:id",auth, authorizeRole(ROLES.PROFESSOR), PostController.deletarPost)
 
 
 
