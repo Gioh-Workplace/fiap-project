@@ -21,7 +21,10 @@ describe("auth middleware", () => {
     await auth(req, res, next);
 
     expect(res.status).toHaveBeenCalledWith(401);
-    expect(res.json).toHaveBeenCalledWith({ message: "Token não informado." });
+    expect(res.json).toHaveBeenCalledWith({
+      success: false,
+      message: "Token não informado.",
+    });
     expect(next).not.toHaveBeenCalled();
   });
 

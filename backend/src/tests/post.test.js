@@ -124,7 +124,7 @@ const { default: app } = await import("../app.js");
 describe("Posts API", () => {
   it("Professor consegue criar post", async () => {
     const res = await request(app)
-      .post("/post")
+      .post("/posts")
       .set("x-user-role", "professor")
       .send({
         titulo: "Post de teste",

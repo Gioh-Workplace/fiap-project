@@ -34,8 +34,8 @@ describe("Home", () => {
   });
 
   it("renderiza posts vindos da API", async () => {
-    mockGetPosts.mockResolvedValue({
-      data: [
+    mockGetPosts.mockResolvedValue([
+      
         {
           _id: "1",
           titulo: "Primeiro Post",
@@ -51,9 +51,9 @@ describe("Home", () => {
           status: "rascunho",
           dtCriacao: "2026-03-21T10:00:00.000Z",
           autor: { nome: "Professor B" },
-        },
-      ],
-    });
+        }
+      
+    ]);
 
     renderWithProviders(<Home />);
 
@@ -64,8 +64,7 @@ describe("Home", () => {
   });
 
   it("filtra posts pela busca", async () => {
-    mockGetPosts.mockResolvedValue({
-      data: [
+    mockGetPosts.mockResolvedValue([
         {
           _id: "1",
           titulo: "React Avançado",
@@ -83,7 +82,7 @@ describe("Home", () => {
           autor: { nome: "Professor B" },
         },
       ],
-    });
+    );
 
     renderWithProviders(<Home />);
 
