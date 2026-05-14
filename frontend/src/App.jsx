@@ -8,6 +8,9 @@ import CreatePost from "./pages/CreatePost"
 import EditPost from "./pages/EditPost"
 import Admin from "./pages/Admin"
 import Login from "./pages/Login"
+import UsersAdmin from "./pages/UsersAdmin";
+import UserForm from "./pages/UsersForm"
+
 
 function App() {
   return (
@@ -22,6 +25,13 @@ function App() {
 
         <Route path="/admin"  element={<ProtectedRoute><AppLayout> <Admin /> </AppLayout></ProtectedRoute>} />
         <Route path="/login" element={<Login />} />
+
+       
+        <Route path="/admin/users" element={<ProtectedRoute><AppLayout> <UsersAdmin /> </AppLayout></ProtectedRoute>} />
+        <Route path="/admin/users/new" element={<ProtectedRoute><AppLayout><UserForm /></AppLayout></ProtectedRoute>} />
+        <Route path="/admin/users/edit/:id" element={<ProtectedRoute><AppLayout><UserForm /></AppLayout></ProtectedRoute>} /> 
+
+
 
       </Routes>
     </BrowserRouter>

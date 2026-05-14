@@ -1,5 +1,5 @@
 import styled from "styled-components"
-import { useNavigate } from "react-router-dom"
+import { useLocation,useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 
 const Bar = styled.header`
@@ -79,6 +79,48 @@ const NavButton = styled.button`
     flex: 1 1 auto;
   }
 `
+const NavMenu = styled.nav`
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  height: 100%;
+  padding-left:10px;
+`;
+
+const NavItem = styled.button`
+  position: relative;
+  border: none;
+  background: transparent;
+  color: ${({ $active }) => ($active ? "#ff7900" : "#374151")};
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 18px 2px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 8px;
+    height: 3px;
+    border-radius: 999px;
+    background: #ff7900;
+    transform: scaleX(${({ $active }) => ($active ? 1 : 0)});
+    transform-origin: center;
+    transition: transform 0.2s ease;
+  }
+
+  &:hover {
+    color: #ff7900;
+  }
+
+  &:hover::after {
+    transform: scaleX(1);
+  }
+`;
+
 
 const RoleBadge = styled.span`
   padding: 8px 12px;
@@ -104,7 +146,12 @@ const UserIcon = styled.div`
 
 export default function Navbar() {
   const navigate = useNavigate()
-  const { role, logout } = useAuth()
+  const location = useLocation();
+  const { role } = useAuth();
+  
+
+  const isPostsActive = location.pathname === "/admin";
+  const isUsersActive = location.pathname.startsWith("/admin/users");
 
   const handleLogout = () => {
     logout()
@@ -120,15 +167,25 @@ export default function Navbar() {
         <Left>
           <Brand onClick={() => navigate("/")}>Fiap-Blog</Brand>
       
-
           {role === "professor" && (
-            <>
-            
-            <NavButton onClick={() => navigate("/admin")}>
-            Admin
-            </NavButton>
-            </>
-          )}
+              <NavMenu>
+                <NavItem
+                  type="button"
+                  $active={isPostsActive}
+                  onClick={() => navigate("/admin")}
+                >
+                  Posts
+                </NavItem>
+
+                <NavItem
+                  type="button"
+                  $active={isUsersActive}
+                  onClick={() => navigate("/admin/users")}
+                >
+                  Usuários
+                </NavItem>
+              </NavMenu>
+  )}
         </Left>
 
         <Right>

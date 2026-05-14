@@ -1,0 +1,27 @@
+import { api } from "./api";
+
+export const getUsers = async (role = "") => {
+  const endpoint = role ? `/users?role=${role}` : "/users";
+  const response = await api.get(endpoint);
+  return response.data.data;
+};
+
+export const getUserById = async (id) => {
+  const response = await api.get(`/users/${id}`);
+  return response.data.data;
+};
+
+export const createUser = async (userData) => {
+  const response = await api.post("/users", userData);
+  return response.data.data;
+};
+
+export const updateUser = async (id, userData) => {
+  const response = await api.put(`/users/${id}`, userData);
+  return response.data.data;
+};
+
+export const deleteUser = async (id) => {
+  const response = await api.delete(`/users/${id}`);
+  return response.data;
+};
