@@ -4,7 +4,7 @@ import styled from "styled-components"
 import { getPostById,deletePost } from "../api/posts"
 import { useAuth } from "../context/AuthContext"
 import ConfirmModal from "../components/ConfirmModal"
-
+import CommentsSection from "../components/CommentsSection"
 
 const Container = styled.div`
   max-width: 900px;
@@ -245,15 +245,15 @@ export default function Post() {
   )}
       </Actions>
 
-      <PostWrapper>
+            <PostWrapper>
         <Title>{post.titulo}</Title>
 
         <Meta>
           <StatusBadge status={post.status}>{post.status}</StatusBadge>
 
           <AuthorText>
-          Por {post.autor?.nome || post.autor?.name || "Autor desconhecido"}
-        </AuthorText>
+            Por {post.autor?.nome || post.autor?.name || "Autor desconhecido"}
+          </AuthorText>
 
           {post.dtCriacao && (
             <DateText>
@@ -270,6 +270,19 @@ export default function Post() {
 
         <Content>{post.descricao}</Content>
       </PostWrapper>
+
+      <CommentsSection postId={post._id || id} />
+
+      {showDeleteModal && (
+        <ConfirmModal
+          title="Excluir post"
+          message="Tem certeza que deseja excluir este post? Essa ação não poderá ser desfeita."
+          confirmText="Excluir"
+          cancelText="Cancelar"
+          onConfirm={handleDelete}
+          onCancel={() => setShowDeleteModal(false)}
+        />
+      )}
       {showDeleteModal && (
       <ConfirmModal
         title="Excluir post"

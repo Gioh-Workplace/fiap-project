@@ -147,7 +147,7 @@ const UserIcon = styled.div`
 export default function Navbar() {
   const navigate = useNavigate()
   const location = useLocation();
-  const { role } = useAuth();
+  const { role,logout } = useAuth();
   
 
   const isPostsActive = location.pathname === "/admin";
@@ -191,11 +191,9 @@ export default function Navbar() {
         <Right>
           <RoleBadge>{roleLabel}</RoleBadge>
           <UserIcon>{userInitial}</UserIcon>
-          <NavButton onClick={() => {logout()
-          navigate("/login")
-          }}>
-          Sair
-        </NavButton>
+          <NavButton type="button" onClick={handleLogout}>
+            Sair
+          </NavButton>
         </Right>
       </BarContent>
     </Bar>
