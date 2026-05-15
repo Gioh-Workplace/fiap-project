@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { createPost } from "../api/posts"
+import { usePosts } from "../context/PostsContext"
 import { useNavigate, useLocation } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import styled from "styled-components"
@@ -82,6 +82,7 @@ export default function CreatePost() {
   const [descricao, setDescricao] = useState("")
 
   const { role } = useAuth()
+  const { createPost } = usePosts()
   const navigate = useNavigate()
   const location = useLocation()
   const returnTo = location.state?.returnTo || "/"

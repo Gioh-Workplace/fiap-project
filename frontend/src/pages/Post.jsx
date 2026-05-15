@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate, useLocation } from "react-router-dom"
 import styled from "styled-components"
-import { getPostById,deletePost } from "../api/posts"
+import { usePosts } from "../context/PostsContext"
 import { useAuth } from "../context/AuthContext"
 import ConfirmModal from "../components/ConfirmModal"
 import CommentsSection from "../components/CommentsSection"
@@ -154,12 +154,13 @@ export default function Post() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { role } = useAuth()
-
-  const [post, setPost] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const { selectedPost, loading, fetchPostById, deletePost } = usePosts()
+  
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const location = useLocation()
   const returnTo = location.state?.returnTo || "/"
+
+  const post = selectedPost
 
   const handleDelete = async () => {
     try {
@@ -171,38 +172,37 @@ export default function Post() {
         state: {
           toast: {
             type: "success",
-            message: "Post excluído com sucesso."
-          }
-        }
+            message: "Post excluído com sucesso.",
+          },
+        },
       })
     } catch (error) {
       console.error("Erro ao excluir post:", error)
+  
       navigate("/", {
         state: {
           toast: {
             type: "error",
-            message: "Erro ao excluir post."
-          }
-        }
+            message: "Erro ao excluir post.",
+          },
+        },
       })
     }
   }
   
+  
 
   useEffect(() => {
-    async function fetchPost() {
+    async function loadPost() {
       try {
-        const response = await getPostById(id)
-        setPost(response)
+        await fetchPostById(id)
       } catch (error) {
         console.error("Erro ao buscar post:", error)
-      } finally {
-        setLoading(false)
       }
     }
-
+  
     if (id) {
-      fetchPost()
+      loadPost()
     }
   }, [id])
 
@@ -283,16 +283,6 @@ export default function Post() {
           onCancel={() => setShowDeleteModal(false)}
         />
       )}
-      {showDeleteModal && (
-      <ConfirmModal
-        title="Excluir post"
-        message="Tem certeza que deseja excluir este post? Essa ação não poderá ser desfeita."
-        confirmText="Excluir"
-        cancelText="Cancelar"
-        onConfirm={handleDelete}
-        onCancel={() => setShowDeleteModal(false)}
-      />
-    )}
 
     </Container>
   )

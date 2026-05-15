@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
-import { getPosts } from "../api/posts"
 import styled from "styled-components"
 import { useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { usePosts } from "../context/PostsContext"
 import Toast from "../components/Toast"
 
 
@@ -215,12 +215,13 @@ export default function Home() {
   const navigate = useNavigate()
   const { role } = useAuth()
   const location = useLocation()
-
+  const { posts, loading, fetchPosts } = usePosts()
+ 
   const [toast, setToast] = useState(null)
-  const [posts, setPosts] = useState([])
-  const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState("todos")
+  
+ 
 
 
   useEffect(() => {
@@ -236,50 +237,42 @@ export default function Home() {
   }
 }, [location, navigate])
 
-  useEffect(() => {
-    async function fetchPosts() {
-      try {
-        const posts = await getPosts()
-
-        const roleFilteredPosts =
-          role === "aluno"
-            ? posts.filter((post) => post.status === "publicado")
-            : posts
-
-        const sortedPosts = [...roleFilteredPosts].sort(
-          (a, b) => new Date(b.dtCriacao) - new Date(a.dtCriacao)
-        )
-            
-
-        setPosts(sortedPosts)
-      } catch (error) {
-        console.error("Erro ao buscar posts:", error)
-      } finally {
-        setLoading(false)
+    useEffect(() => {
+      async function loadPosts() {
+        try {
+          await fetchPosts()
+        } catch (error) {
+          console.error("Erro ao buscar posts:", error)
+          setToast({ type: "error", message: "Erro ao carregar posts." })
+        }
       }
-    }
 
-    if (role) {
-      fetchPosts()
-    }
-  }, [role])
+      if (role) {
+        loadPosts()
+      }
+    }, [role])
 
   if (loading) {
     return <EmptyState>Carregando posts...</EmptyState>
   }
 
-  const visiblePosts = posts.filter((post) => {
-    const matchesSearch =
-      post.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.descricao.toLowerCase().includes(searchTerm.toLowerCase())
-  
-    const matchesStatus =
-      role !== "professor" || statusFilter === "todos"
-        ? true
-        : post.status === statusFilter
-  
-    return matchesSearch && matchesStatus
-  })
+  const roleFilteredPosts =
+  role === "aluno"
+    ? posts.filter((post) => post.status === "publicado")
+    : posts
+
+const visiblePosts = roleFilteredPosts.filter((post) => {
+  const matchesSearch =
+    post.titulo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    post.descricao.toLowerCase().includes(searchTerm.toLowerCase())
+
+  const matchesStatus =
+    role !== "professor" || statusFilter === "todos"
+      ? true
+      : post.status === statusFilter
+
+  return matchesSearch && matchesStatus
+})
 
 
   return (

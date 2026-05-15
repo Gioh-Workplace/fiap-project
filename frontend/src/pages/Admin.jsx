@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import styled from "styled-components"
-import { useNavigate } from "react-router-dom"
-import { getPosts, deletePost,updatePost } from "../api/posts"
+import { useNavigate,useLocation } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
+import { usePosts } from "../context/PostsContext"
 import ConfirmModal from "../components/ConfirmModal"
 import Toast from "../components/Toast"
 
@@ -121,31 +121,33 @@ const PrimaryButton = styled.button`
 export default function Admin() {
   const { role } = useAuth()
   const navigate = useNavigate()
-
-  const [posts, setPosts] = useState([])
+  const location = useLocation()
+  const { posts, fetchPosts, deletePost, updatePost } = usePosts()
+  
   const [toast, setToast] = useState(null)
   const [postToDelete, setPostToDelete] = useState(null)
 
   useEffect(() => {
-    async function fetchPosts() {
+    if (location.state?.toast) {
+      setToast(location.state.toast)
+  
+      navigate(location.pathname, {
+        replace: true,
+        state: {},
+      })
+    }
+  }, [location.state, location.pathname, navigate])
+
+  useEffect(() => {
+    async function loadPosts() {
       try {
-        const posts = await getPosts();
-
-        const sortedPosts = [...posts].sort((a, b) => {
-          const dateA = new Date(a.dtCriacao || a.createdAt)
-          const dateB = new Date(b.dtCriacao || b.createdAt)
-
-          return dateB - dateA
-        });
-
-      setPosts(sortedPosts);
+        await fetchPosts()
       } catch (error) {
-        console.error("Erro ao buscar posts:", error)
         setToast({ type: "error", message: "Erro ao carregar posts." })
       }
     }
-
-    fetchPosts()
+  
+    loadPosts()
   }, [])
 
   useEffect(() => {
@@ -161,13 +163,13 @@ export default function Admin() {
   if (role !== "professor") {
     return <Container>Acesso negado.</Container>
   }
+
   const handleDelete = async () => {
     if (!postToDelete) return
-
+  
     try {
       await deletePost(postToDelete._id)
-
-      setPosts((prev) => prev.filter((p) => p._id !== postToDelete._id))
+  
       setToast({ type: "success", message: "Post excluído com sucesso." })
       setPostToDelete(null)
     } catch (error) {
@@ -176,29 +178,23 @@ export default function Admin() {
     }
   }
   
-  const handleStatusChange = async (id, newStatus) => {
-    const originalPost = posts.find((p) => p._id === id)
-    if (!originalPost) return
+const handleStatusChange = async (id, newStatus) => {
+  const originalPost = posts.find((p) => p._id === id)
+  if (!originalPost) return
 
-    try {
-      await updatePost(id, {
-        titulo: originalPost.titulo,
-        descricao: originalPost.descricao,
-        status: newStatus
-      })
+  try {
+    await updatePost(id, {
+      titulo: originalPost.titulo,
+      descricao: originalPost.descricao,
+      status: newStatus,
+    })
 
-      setPosts((prev) =>
-        prev.map((post) =>
-          post._id === id ? { ...post, status: newStatus } : post
-        )
-      )
-
-      setToast({ type: "success", message: "Status atualizado com sucesso." })
-    } catch (error) {
-      console.error("Erro ao atualizar status:", error)
-      setToast({ type: "error", message: "Erro ao atualizar status." })
-    }
+    setToast({ type: "success", message: "Status atualizado com sucesso." })
+  } catch (error) {
+    console.error("Erro ao atualizar status:", error)
+    setToast({ type: "error", message: "Erro ao atualizar status." })
   }
+}
 
 
 

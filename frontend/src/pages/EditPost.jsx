@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate, useParams,useLocation } from "react-router-dom"
 import styled from "styled-components"
-import { getPostById, updatePost } from "../api/posts"
+import { usePosts } from "../context/PostsContext"
 import { useAuth } from "../context/AuthContext"
 
 const Container = styled.div`
@@ -84,12 +84,6 @@ const SecondaryButton = styled.button`
   cursor: pointer;
 `
 
-const Message = styled.p`
-  text-align: center;
-  margin-bottom: 10px;
-  color: green;
-`
-
 const ErrorMessage = styled.p`
   text-align: center;
   margin-bottom: 10px;
@@ -100,6 +94,7 @@ export default function EditPost() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { role } = useAuth()
+  const { fetchPostById, updatePost } = usePosts()
 
   const [titulo, setTitulo] = useState("")
   const [descricao, setDescricao] = useState("")
@@ -111,11 +106,10 @@ export default function EditPost() {
   const returnTo = location.state?.returnTo || `/post/${id}`
 
   useEffect(() => {
-    async function fetchPost() {
+    async function loadPost() {
       try {
-        const response = await getPostById(id)
-        const post = await getPostById(id)
-
+        const post = await fetchPostById(id)
+  
         setTitulo(post.titulo || "")
         setDescricao(post.descricao || "")
         setStatus(post.status || "rascunho")
@@ -126,9 +120,9 @@ export default function EditPost() {
         setLoading(false)
       }
     }
-
+  
     if (id) {
-      fetchPost()
+      loadPost()
     }
   }, [id])
 
