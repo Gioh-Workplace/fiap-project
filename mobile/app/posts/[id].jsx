@@ -5,6 +5,8 @@ import styled from "styled-components/native"
 import { useAuth } from "../../src/context/AuthContext"
 import { usePosts } from "../../src/context/PostsContext"
 import CommentsSection from "../../src/components/CommentsSection"
+import { getPostColor } from "../../src/utils/colors"
+import AppHeader from "../../src/components/AppHeader"
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -15,25 +17,10 @@ const Content = styled.View`
   padding: 20px;
 `
 
-const BackButton = styled.Pressable`
-  align-self: flex-start;
-  background-color: #fff7ef;
-  border-width: 1px;
-  border-color: #ffd6ad;
-  padding: 10px 14px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-`
-
-const BackButtonText = styled.Text`
-  color: #ff7900;
-  font-weight: bold;
-`
-
 const Card = styled.View`
-  background-color: #fff7ef;
+  background-color: ${({ $colors }) => $colors.background};
   border-width: 1px;
-  border-color: #ffd6ad;
+  border-color: ${({ $colors }) => $colors.border};
   border-radius: 14px;
   padding: 18px;
 `
@@ -142,11 +129,16 @@ const DeleteButtonText = styled.Text`
   font-weight: bold;
 `
 
+const Screen = styled.View`
+  flex: 1;
+  background-color: #ffffff;
+`
+
 export default function PostDetailsScreen() {
   const { id } = useLocalSearchParams()
   const { role } = useAuth()
   const { selectedPost, loading, error, fetchPostById, deletePost } = usePosts()
-
+  const postColor = getPostColor(selectedPost?._id)
 
   useEffect(() => {
     if (id) {
@@ -203,11 +195,13 @@ export default function PostDetailsScreen() {
   }
 
   return (
+    <Screen>
+      <AppHeader title="Post" showBack />
+
+
     <Container>
       <Content>
-        <BackButton onPress={() => router.back()}>
-          <BackButtonText>Voltar</BackButtonText>
-        </BackButton>
+        
         {role === "professor" && (
           <Actions>
               <EditButton onPress={() => router.push(`/posts/${id}/edit`)}>
@@ -221,7 +215,7 @@ export default function PostDetailsScreen() {
         )}
 
 
-        <Card>
+        <Card $colors={postColor}>
           <Header>
             <Title>{selectedPost.titulo}</Title>
 
@@ -241,5 +235,6 @@ export default function PostDetailsScreen() {
         <CommentsSection postId={id} />
       </Content>
     </Container>
+    </Screen>
   )
 }

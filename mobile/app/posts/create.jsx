@@ -4,6 +4,7 @@ import { router } from "expo-router"
 import styled from "styled-components/native"
 import { useAuth } from "../../src/context/AuthContext"
 import { usePosts } from "../../src/context/PostsContext"
+import AppHeader from "../../src/components/AppHeader"
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -102,6 +103,10 @@ const AccessDenied = styled.Text`
   text-align: center;
   margin-top: 40px;
 `
+const Screen = styled.View`
+  flex: 1;
+  background-color: #ffffff;
+`
 
 export default function CreatePostScreen() {
   const { role } = useAuth()
@@ -149,9 +154,11 @@ export default function CreatePostScreen() {
   }
 
   return (
+    <Screen>
+      <AppHeader title="Novo Post" showBack />
     <Container>
       <Content>
-        <Title>Novo Post</Title>
+       
 
         <FormCard>
           {error ? <ErrorText>{error}</ErrorText> : null}
@@ -189,5 +196,6 @@ export default function CreatePostScreen() {
         </FormCard>
       </Content>
     </Container>
+    </Screen>
   )
 }

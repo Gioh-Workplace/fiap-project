@@ -5,6 +5,9 @@ import { useAuth } from "../../src/context/AuthContext"
 import { getUsers, deleteUser } from "../../src/api/users"
 import { useFocusEffect } from "expo-router"
 import { useCallback, useMemo, useState } from "react"
+import AppHeader from "../../src/components/AppHeader"
+import BottomNav from "../../src/components/BottomNav"
+import { getRoleColor } from "../../src/utils/colors"
 
 const Container = styled.View`
   flex: 1;
@@ -12,39 +15,19 @@ const Container = styled.View`
   padding: 20px;
 `
 
-const Header = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-`
-
-const HeaderInfo = styled.View`
-  flex: 1;
-`
-
-const Title = styled.Text`
-  font-size: 24px;
-  font-weight: bold;
-  color: #1f2937;
-`
-
-const Subtitle = styled.Text`
-  margin-top: 4px;
-  font-size: 13px;
-  color: #6b7280;
-`
 
 const CreateButton = styled.Pressable`
   background-color: #ff7900;
-  padding: 10px 14px;
-  border-radius: 8px;
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 14px;
 `
 
 const CreateButtonText = styled.Text`
   color: #ffffff;
   font-weight: bold;
+  font-size: 15px;
+  text-align: center;
 `
 
 const FilterRow = styled.View`
@@ -53,26 +36,50 @@ const FilterRow = styled.View`
   margin-bottom: 16px;
 `
 
-const FilterButton = styled.Pressable`
-  flex: 1;
-  padding: 10px;
-  border-radius: 8px;
-  align-items: center;
-  border-width: 1px;
-  border-color: ${({ $active }) => ($active ? "#ff7900" : "#d1d5db")};
-  background-color: ${({ $active }) => ($active ? "#ff7900" : "#ffffff")};
-`
+const getFilterColor = (filter) => {
+    if (filter === "professor") {
+      return "#2563eb"
+    }
+    else if(filter === "aluno"){
+    return "#ff7900"
+    }
+    return "#50ba85"
+  }
+  
+  const getFilterBackground = (filter) => {
+    if (filter === "professor") {
+        return "#eff6ff"
+      }
+      else if(filter === "aluno"){
+      return "#fff7ef"
+      }
+      return "#dbffed"
 
-const FilterText = styled.Text`
-  color: ${({ $active }) => ($active ? "#ffffff" : "#374151")};
-  font-weight: bold;
-  font-size: 13px;
-`
+  }
+  
+  const FilterButton = styled.Pressable`
+    flex: 1;
+    padding: 10px;
+    border-radius: 8px;
+    align-items: center;
+    border-width: 1px;
+    border-color: ${({ $active, $filter }) =>
+      $active ? getFilterColor($filter) : "#d1d5db"};
+    background-color: ${({ $active, $filter }) =>
+      $active ? getFilterBackground($filter) : "#ffffff"};
+  `
+  
+  const FilterText = styled.Text`
+    color: ${({ $active, $filter }) =>
+      $active ? getFilterColor($filter) : "#374151"};
+    font-weight: bold;
+    font-size: 13px;
+  `
 
 const UserCard = styled.View`
-  background-color: #fff7ef;
+  background-color: ${({ $colors }) => $colors.background};
   border-width: 1px;
-  border-color: #ffd6ad;
+  border-color: ${({ $colors }) => $colors.border};
   border-radius: 14px;
   padding: 16px;
   margin-bottom: 12px;
@@ -94,7 +101,7 @@ const UserName = styled.Text`
 `
 
 const RoleBadge = styled.View`
-  background-color: #ff7900;
+  background-color: ${({ $colors }) => $colors.solid};
   padding: 4px 8px;
   border-radius: 999px;
 `
@@ -175,6 +182,13 @@ const RetryText = styled.Text`
   font-weight: bold;
 `
 
+const Screen = styled.View`
+  flex: 1;
+  background-color: #ffffff;
+`
+
+
+
 export default function UsersScreen() {
   const { user, role } = useAuth()
 
@@ -253,29 +267,33 @@ export default function UsersScreen() {
     )
   }
 
-  const renderUser = ({ item }) => (
-    <UserCard>
-      <UserHeader>
-        <UserName>{item.nome || "Usuário sem nome"}</UserName>
-
-        <RoleBadge>
-          <RoleText>{item.role}</RoleText>
-        </RoleBadge>
-      </UserHeader>
-
-      <UserEmail>{item.email}</UserEmail>
-
-      <Actions>
-        <EditButton onPress={() => router.push(`/users/${item._id || item.id}/edit`)}>
-          <EditButtonText>Editar</EditButtonText>
-        </EditButton>
-
-        <DeleteButton onPress={() => handleDelete(item)}>
-          <DeleteButtonText>Excluir</DeleteButtonText>
-        </DeleteButton>
-      </Actions>
-    </UserCard>
-  )
+  const renderUser = ({ item }) => {
+    const roleColors = getRoleColor(item.role)
+  
+    return (
+      <UserCard $colors={roleColors}>
+        <UserHeader>
+          <UserName>{item.nome || "Usuário sem nome"}</UserName>
+  
+          <RoleBadge $colors={roleColors}>
+            <RoleText $colors={roleColors}>{item.role}</RoleText>
+          </RoleBadge>
+        </UserHeader>
+  
+        <UserEmail>{item.email}</UserEmail>
+  
+        <Actions>
+          <EditButton onPress={() => router.push(`/users/${item._id || item.id}/edit`)}>
+            <EditButtonText>Editar</EditButtonText>
+          </EditButton>
+  
+          <DeleteButton onPress={() => handleDelete(item)}>
+            <DeleteButtonText>Excluir</DeleteButtonText>
+          </DeleteButton>
+        </Actions>
+      </UserCard>
+    )
+  }
 
   if (role !== "professor") {
     return (
@@ -286,58 +304,75 @@ export default function UsersScreen() {
   }
 
   return (
-    <Container>
-      <Header>
-        <HeaderInfo>
-          <Title>Usuários</Title>
-          <Subtitle>Gerencie professores e alunos</Subtitle>
-        </HeaderInfo>
-
+    <Screen>
+      <AppHeader title="Usuários" subtitle="Gerencie professores e alunos" />
+  
+      <Container>
         <CreateButton onPress={() => router.push("/users/create")}>
-          <CreateButtonText>Novo</CreateButtonText>
+          <CreateButtonText>Novo usuário</CreateButtonText>
         </CreateButton>
-      </Header>
-
-      <FilterRow>
-        <FilterButton $active={filter === "todos"} onPress={() => setFilter("todos")}>
-          <FilterText $active={filter === "todos"}>Todos</FilterText>
-        </FilterButton>
-
-        <FilterButton $active={filter === "professor"} onPress={() => setFilter("professor")}>
-          <FilterText $active={filter === "professor"}>Professores</FilterText>
-        </FilterButton>
-
-        <FilterButton $active={filter === "aluno"} onPress={() => setFilter("aluno")}>
-          <FilterText $active={filter === "aluno"}>Alunos</FilterText>
-        </FilterButton>
-      </FilterRow>
-
-      {loading && (
-        <CenterContent>
-          <ActivityIndicator size="large" color="#ff7900" />
-          <HelperText>Carregando usuários...</HelperText>
-        </CenterContent>
-      )}
-
-      {!loading && error ? (
-        <CenterContent>
-          <ErrorText>{error}</ErrorText>
-
-          <RetryButton onPress={fetchUsers}>
-            <RetryText>Tentar novamente</RetryText>
-          </RetryButton>
-        </CenterContent>
-      ) : null}
-
-      {!loading && !error && (
-        <FlatList
-          data={filteredUsers}
-          keyExtractor={(item) => item._id || item.id}
-          renderItem={renderUser}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          ListEmptyComponent={<HelperText>Nenhum usuário encontrado.</HelperText>}
-        />
-      )}
-    </Container>
+  
+        <FilterRow>
+          <FilterButton
+            $active={filter === "todos"}
+            $filter="todos"
+            onPress={() => setFilter("todos")}
+          >
+            <FilterText $active={filter === "todos"} $filter="todos">
+              Todos
+            </FilterText>
+          </FilterButton>
+  
+          <FilterButton
+            $active={filter === "professor"}
+            $filter="professor"
+            onPress={() => setFilter("professor")}
+          >
+            <FilterText $active={filter === "professor"} $filter="professor">
+              Professores
+            </FilterText>
+          </FilterButton>
+  
+          <FilterButton
+            $active={filter === "aluno"}
+            $filter="aluno"
+            onPress={() => setFilter("aluno")}
+          >
+            <FilterText $active={filter === "aluno"} $filter="aluno">
+              Alunos
+            </FilterText>
+          </FilterButton>
+        </FilterRow>
+  
+        {loading && (
+          <CenterContent>
+            <ActivityIndicator size="large" color="#ff7900" />
+            <HelperText>Carregando usuários...</HelperText>
+          </CenterContent>
+        )}
+  
+        {!loading && error ? (
+          <CenterContent>
+            <ErrorText>{error}</ErrorText>
+  
+            <RetryButton onPress={fetchUsers}>
+              <RetryText>Tentar novamente</RetryText>
+            </RetryButton>
+          </CenterContent>
+        ) : null}
+  
+        {!loading && !error && (
+          <FlatList
+            data={filteredUsers}
+            keyExtractor={(item) => item._id || item.id}
+            renderItem={renderUser}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            ListEmptyComponent={<HelperText>Nenhum usuário encontrado.</HelperText>}
+          />
+        )}
+      </Container>
+  
+      <BottomNav />
+    </Screen>
   )
 }

@@ -7,14 +7,15 @@ export default function RootLayout() {
     <AuthProvider>
       <PostsProvider>
         <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="home" options={{ title: "Fiap Blog" }} />
-        <Stack.Screen name="posts/create" options={{ title: "Novo Post" }} />
-        <Stack.Screen name="posts/[id]" options={{ title: "Post" }} />
-        <Stack.Screen name="posts/[id]/edit" options={{ title: "Editar Post" }} />
-        <Stack.Screen name="users/index" options={{ title: "Usuários" }} />
-        <Stack.Screen name="users/create" options={{ title: "Novo Usuário" }} />
-        <Stack.Screen name="users/[id]/edit" options={{ title: "Editar Usuário" }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="home" options={{ headerShown: false }} />
+          <Stack.Screen name="admin" options={{ headerShown: false }} />
+          <Stack.Screen name="posts/create" options={{ headerShown: false }} />
+          <Stack.Screen name="posts/[id]" options={{ headerShown: false }} />
+          <Stack.Screen name="posts/[id]/edit" options={{ headerShown: false }} />
+          <Stack.Screen name="users/index" options={{ headerShown: false }} />
+          <Stack.Screen name="users/create" options={{ headerShown: false }} />
+          <Stack.Screen name="users/[id]/edit" options={{ headerShown: false }} />
         </Stack>
       </PostsProvider>
     </AuthProvider>

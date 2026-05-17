@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from "expo-router"
 import styled from "styled-components/native"
 import { useAuth } from "../../../src/context/AuthContext"
 import { usePosts } from "../../../src/context/PostsContext"
+import AppHeader from "../../../src/components/AppHeader"
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -131,6 +132,11 @@ const LoadingText = styled.Text`
   color: #6b7280;
 `
 
+const Screen = styled.View`
+  flex: 1;
+  background-color: #ffffff;
+`
+
 export default function EditPostScreen() {
   const { id } = useLocalSearchParams()
   const { role } = useAuth()
@@ -215,9 +221,11 @@ export default function EditPostScreen() {
   }
 
   return (
+    <Screen>
+      <AppHeader title="Editar Post" showBack />
     <Container>
       <Content>
-        <Title>Editar Post</Title>
+        
 
         <FormCard>
           {error ? <ErrorText>{error}</ErrorText> : null}
@@ -270,5 +278,6 @@ export default function EditPostScreen() {
         </FormCard>
       </Content>
     </Container>
+    </Screen>
   )
 }

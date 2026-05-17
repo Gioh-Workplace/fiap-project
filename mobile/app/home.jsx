@@ -4,47 +4,10 @@ import { router } from "expo-router"
 import styled from "styled-components/native"
 import { useAuth } from "../src/context/AuthContext"
 import { usePosts } from "../src/context/PostsContext"
+import AppHeader from "../src/components/AppHeader"
+import BottomNav from "../src/components/BottomNav"
+import { getPostColor } from "../src/utils/colors"
 
-const Container = styled.View`
-  flex: 1;
-  padding: 20px;
-  background-color: #ffffff;
-`
-
-const TopBar = styled.View`
-  flex-direction: row;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
-`
-
-const UserInfo = styled.View`
-  flex: 1;
-`
-
-const Title = styled.Text`
-  font-size: 24px;
-  font-weight: bold;
-  color: #1f2937;
-`
-
-const Subtitle = styled.Text`
-  margin-top: 4px;
-  font-size: 13px;
-  color: #6b7280;
-`
-
-const LogoutButton = styled.Pressable`
-  background-color: #ff7900;
-  padding: 8px 14px;
-  border-radius: 8px;
-`
-
-const LogoutText = styled.Text`
-  color: #ffffff;
-  font-weight: bold;
-`
 
 const SearchInput = styled.TextInput`
   border-width: 1px;
@@ -56,9 +19,9 @@ const SearchInput = styled.TextInput`
 `
 
 const PostCard = styled.Pressable`
-  background-color: #fff7ef;
+  background-color: ${({ $colors }) => $colors.background};
   border-width: 1px;
-  border-color: #ffd6ad;
+  border-color: ${({ $colors }) => $colors.border};
   border-radius: 14px;
   padding: 16px;
   margin-bottom: 12px;
@@ -139,41 +102,36 @@ const EmptyText = styled.Text`
   color: #6b7280;
   margin-top: 32px;
 `
-
-const ActionsHeader = styled.View`
-  flex-direction: row;
-  align-items: center;
-  gap: 8px;
-`
-
-const CreateButton = styled.Pressable`
-  background-color: #fff7ef;
-  border-width: 1px;
-  border-color: #ffd6ad;
-  padding: 8px 12px;
-  border-radius: 8px;
-`
-
-const CreateButtonText = styled.Text`
-  color: #ff7900;
-  font-weight: bold;
-`
-
-const UsersButton = styled.Pressable`
+const Screen = styled.View`
+  flex: 1;
   background-color: #ffffff;
-  border-width: 1px;
-  border-color: #ffd6ad;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding-top:2px;
 `
 
-const UsersButtonText = styled.Text`
-  color: #ff7900;
-  font-weight: bold;
+const Container = styled.View`
+  flex: 1;
+  padding: 10px 20px 20px 20px;
+  background-color: #ffffff;
 `
+
+const CreatePostButton = styled.Pressable`
+  background-color: #ff7900;
+  padding: 14px;
+  border-radius: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+`
+
+const CreatePostButtonText = styled.Text`
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 15px;
+`
+
+
 
 export default function HomeScreen() {
-  const { user, role, logout } = useAuth()
+  const { role } = useAuth()
   const { posts, loading, error, fetchPosts } = usePosts()
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -198,96 +156,82 @@ export default function HomeScreen() {
     })
   }, [posts, role, searchTerm])
 
-  const handleLogout = async () => {
-    await logout()
-    router.replace("/")
+  
+
+  const renderPost = ({ item }) => {
+    const postColor = getPostColor(item._id)
+  
+    return (
+      <PostCard
+        $colors={postColor}
+        onPress={() => router.push(`/posts/${item._id}`)}
+      >
+        <PostHeader>
+          <PostTitle>{item.titulo}</PostTitle>
+  
+          {role === "professor" && (
+            <StatusBadge>
+              <StatusText>{item.status}</StatusText>
+            </StatusBadge>
+          )}
+        </PostHeader>
+  
+        <PostDescription numberOfLines={3}>
+          {item.descricao}
+        </PostDescription>
+  
+        <PostAuthor>
+          Autor: {item.autor?.nome || item.autor?.email || "Não informado"}
+        </PostAuthor>
+      </PostCard>
+    )
   }
 
-  const renderPost = ({ item }) => (
-    <PostCard onPress={() => router.push(`/posts/${item._id}`)}>
-      <PostHeader>
-        <PostTitle>{item.titulo}</PostTitle>
-
-        {role === "professor" && (
-          <StatusBadge>
-            <StatusText>{item.status}</StatusText>
-          </StatusBadge>
-        )}
-      </PostHeader>
-
-      <PostDescription numberOfLines={3}>
-        {item.descricao}
-      </PostDescription>
-
-      <PostAuthor>
-        Autor: {item.autor?.nome || item.autor?.email || "Não informado"}
-      </PostAuthor>
-    </PostCard>
-  )
-
   return (
-    <Container>
-      <TopBar>
-        <UserInfo>
-          <Title>Mural de Posts</Title>
-          <Subtitle>
-            {user?.nome || user?.email || "Usuário"} • {role || "perfil"}
-          </Subtitle>
-        </UserInfo>
-
-        <ActionsHeader>
-        {role === "professor" && (
-            <>
-              <UsersButton onPress={() => router.push("/users")}>
-                <UsersButtonText>Usuários</UsersButtonText>
-              </UsersButton>
-
-              <CreateButton onPress={() => router.push("/posts/create")}>
-                <CreateButtonText>Novo</CreateButtonText>
-              </CreateButton>
-            </>
-        )}
-
-              <LogoutButton onPress={handleLogout}>
-                <LogoutText>Sair</LogoutText>
-              </LogoutButton>
-        </ActionsHeader>
-      </TopBar>
-
-      <SearchInput
-        placeholder="Buscar por título ou descrição..."
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-      />
-
-      {loading && (
-        <CenterContent>
-          <ActivityIndicator size="large" color="#ff7900" />
-          <LoadingText>Carregando posts...</LoadingText>
-        </CenterContent>
+    <Screen>
+      <AppHeader title="Mural de Posts" />
+      <Container>
+      {role === "professor" && (
+        <CreatePostButton onPress={() => router.push("/posts/create")}>
+          <CreatePostButtonText>Novo Post</CreatePostButtonText>
+        </CreatePostButton>
       )}
 
-      {!loading && error ? (
-        <CenterContent>
-          <ErrorText>{error}</ErrorText>
-
-          <RetryButton onPress={fetchPosts}>
-            <RetryText>Tentar novamente</RetryText>
-          </RetryButton>
-        </CenterContent>
-      ) : null}
-
-      {!loading && !error && (
-        <FlatList
-          data={visiblePosts}
-          keyExtractor={(item) => item._id}
-          renderItem={renderPost}
-          contentContainerStyle={{ paddingBottom: 24 }}
-          ListEmptyComponent={
-            <EmptyText>Nenhum post encontrado.</EmptyText>
-          }
+        <SearchInput
+          placeholder="Buscar por título ou descrição..."
+          value={searchTerm}
+          onChangeText={setSearchTerm}
         />
-      )}
-    </Container>
+  
+        {loading && (
+          <CenterContent>
+            <ActivityIndicator size="large" color="#ff7900" />
+            <LoadingText>Carregando posts...</LoadingText>
+          </CenterContent>
+        )}
+  
+        {!loading && error ? (
+          <CenterContent>
+            <ErrorText>{error}</ErrorText>
+  
+            <RetryButton onPress={fetchPosts}>
+              <RetryText>Tentar novamente</RetryText>
+            </RetryButton>
+          </CenterContent>
+        ) : null}
+  
+        {!loading && !error && (
+          <FlatList
+            data={visiblePosts}
+            keyExtractor={(item) => item._id}
+            renderItem={renderPost}
+            contentContainerStyle={{ paddingBottom: 24 }}
+            ListEmptyComponent={<EmptyText>Nenhum post encontrado.</EmptyText>}
+          />
+        )}
+      </Container>
+  
+      <BottomNav />
+    </Screen>
   )
 }

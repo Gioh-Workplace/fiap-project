@@ -4,6 +4,7 @@ import { router } from "expo-router"
 import styled from "styled-components/native"
 import { useAuth } from "../../src/context/AuthContext"
 import { createUser } from "../../src/api/users"
+import AppHeader from "../../src/components/AppHeader"
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -14,12 +15,6 @@ const Content = styled.View`
   padding: 20px;
 `
 
-const Title = styled.Text`
-  font-size: 26px;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 16px;
-`
 
 const FormCard = styled.View`
   background-color: #fff7ef;
@@ -114,6 +109,11 @@ const CenterContent = styled.View`
   background-color: #ffffff;
 `
 
+const Screen = styled.View`
+  flex: 1;
+  background-color: #ffffff;
+`
+
 export default function CreateUserScreen() {
   const { role } = useAuth()
 
@@ -160,9 +160,11 @@ export default function CreateUserScreen() {
   }
 
   return (
+    <Screen> 
+        <AppHeader title="Novo Usuário" showBack />
     <Container>
       <Content>
-        <Title>Novo Usuário</Title>
+        
 
         <FormCard>
           {error ? <ErrorText>{error}</ErrorText> : null}
@@ -216,5 +218,6 @@ export default function CreateUserScreen() {
         </FormCard>
       </Content>
     </Container>
+    </Screen>
   )
 }
