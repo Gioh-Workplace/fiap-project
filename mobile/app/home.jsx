@@ -159,6 +159,18 @@ const CreateButtonText = styled.Text`
   font-weight: bold;
 `
 
+const UsersButton = styled.Pressable`
+  background-color: #ffffff;
+  border-width: 1px;
+  border-color: #ffd6ad;
+  padding: 8px 12px;
+  border-radius: 8px;
+`
+
+const UsersButtonText = styled.Text`
+  color: #ff7900;
+  font-weight: bold;
+`
 
 export default function HomeScreen() {
   const { user, role, logout } = useAuth()
@@ -224,11 +236,17 @@ export default function HomeScreen() {
         </UserInfo>
 
         <ActionsHeader>
-              {role === "professor" && (
-                <CreateButton onPress={() => router.push("/posts/create")}>
-                  <CreateButtonText>Novo</CreateButtonText>
-                </CreateButton>
-              )}
+        {role === "professor" && (
+            <>
+              <UsersButton onPress={() => router.push("/users")}>
+                <UsersButtonText>Usuários</UsersButtonText>
+              </UsersButton>
+
+              <CreateButton onPress={() => router.push("/posts/create")}>
+                <CreateButtonText>Novo</CreateButtonText>
+              </CreateButton>
+            </>
+        )}
 
               <LogoutButton onPress={handleLogout}>
                 <LogoutText>Sair</LogoutText>
