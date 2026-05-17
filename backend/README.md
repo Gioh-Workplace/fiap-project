@@ -1,172 +1,388 @@
-# Backend - FIAP Project
+# Backend - FIAP Blog
 
-API REST responsável pelo gerenciamento de posts e autenticação de usuários.
+API REST do projeto FIAP Blog, responsável por autenticação, controle de usuários, posts e comentários.
 
-A aplicação implementa autenticação com JWT, controle de acesso por perfil e integração com banco de dados MongoDB.
-
----
-
-## 📌 Funcionalidades
-
-* Autenticação de usuários com JWT
-* Login com email e senha
-* Criação de posts
-* Edição de posts
-* Exclusão de posts
-* Listagem de posts
-* Busca de posts
-* Controle de acesso por perfil (professor/aluno)
-* Associação automática do autor ao post
-* Validação de status de posts
+O backend centraliza as regras de negócio do sistema, incluindo autenticação com JWT, controle de acesso por perfil e integração com o banco de dados MongoDB.
 
 ---
 
-## 🧠 Arquitetura
+## Objetivo
 
-A API segue uma estrutura organizada em camadas:
+O objetivo do backend é fornecer uma API REST para ser consumida pelas aplicações Web e Mobile.
 
-* `controllers/` → regras de negócio
-* `models/` → schemas do MongoDB
-* `routes/` → definição das rotas
-* `middlewares/` → autenticação e autorização
-* `utils/` → funções auxiliares (JWT, etc.)
-* `constants/` → valores fixos da aplicação
+A API permite:
 
----
-
-## 🔐 Autenticação
-
-A API utiliza autenticação baseada em JWT (JSON Web Token).
-
-### Fluxo:
-
-1. Usuário faz login via `/auth/login`
-2. Backend valida credenciais
-3. Um token JWT é gerado
-4. O token deve ser enviado no header:
-
-Authorization: Bearer `<token>`
-
-### Middleware de autenticação:
-
-* Valida o token
-* Recupera o usuário
-* Injeta em `req.user`
+- autenticar usuários
+- validar permissões por perfil
+- gerenciar posts
+- gerenciar usuários
+- gerenciar comentários
+- proteger rotas administrativas
+- padronizar respostas enviadas ao frontend e ao mobile
 
 ---
 
-## 👤 Controle de acesso
+## Tecnologias Utilizadas
 
-O sistema utiliza roles:
+- Node.js
+- Express
+- MongoDB
+- Mongoose
+- JWT
+- bcrypt
+- dotenv
+- cors
+- Jest
+- Supertest
+
+---
+
+## Arquitetura
+
+O backend está organizado em camadas para separar responsabilidades.
+
+```txt
+backend/
+├── src/
+│   ├── constants/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── models/
+│   ├── routes/
+│   ├── tests/
+│   ├── utils/
+│   ├── app.js
+│   └── server.js
+├── package.json
+└── README.md
+````
+
+---
+
+## Principais Pastas
+
+### `controllers/`
+
+Contém a lógica das requisições.
+
+Principais controllers:
+
+* `authController.js`
+* `postController.js`
+* `userController.js`
+* `commentController.js`
+
+---
+
+### `models/`
+
+Contém os modelos do MongoDB utilizando Mongoose.
+
+Principais models:
+
+* `User.js`
+* `Post.js`
+* `Comment.js`
+
+---
+
+### `routes/`
+
+Contém as rotas da API.
+
+Principais rotas:
+
+* `authRoutes.js`
+* `postRoutes.js`
+* `userRoutes.js`
+* `commentRoutes.js`
+
+---
+
+### `middlewares/`
+
+Contém middlewares da aplicação.
+
+Principal middleware:
+
+* `authMiddleware.js`
+
+Esse middleware valida o token JWT enviado nas requisições protegidas.
+
+---
+
+### `utils/`
+
+Contém funções utilitárias.
+
+Principais arquivos:
+
+* `apiResponse.js`
+* `jwt.js`
+
+---
+
+### `constants/`
+
+Centraliza constantes usadas no sistema.
+
+Exemplos:
+
+* roles de usuário
+* status de posts
+* configurações de autenticação
+
+---
+
+## Autenticação
+
+A autenticação é feita com JWT.
+
+Fluxo:
+
+1. O usuário envia email e senha para a rota de login.
+2. O backend valida as credenciais.
+3. Se os dados estiverem corretos, o backend gera um token JWT.
+4. O token é enviado ao cliente.
+5. O cliente envia o token nas próximas requisições protegidas.
+6. O middleware de autenticação valida o token antes de permitir o acesso.
+
+---
+
+## Autorização
+
+O sistema possui controle de acesso baseado em perfil.
 
 ### Professor
 
-* Pode criar posts
-* Pode editar posts
-* Pode excluir posts
+Pode realizar ações administrativas:
+
+* criar posts
+* editar posts
+* excluir posts
+* alterar status de posts
+* visualizar posts em todos os status
+* criar usuários
+* editar usuários
+* excluir usuários
+* comentar em posts
 
 ### Aluno
 
-* Pode apenas visualizar posts
+Possui acesso limitado:
 
-Controle feito via middleware:
-
-* `auth` → autenticação
-* `authorizeRole` → autorização por perfil
-
----
-
-## 🗄️ Modelos de dados
-
-### User
-
-* nome
-* email
-* senha (hash com bcrypt)
-* role (professor | aluno)
+* visualizar posts publicados
+* visualizar detalhes de posts publicados
+* criar comentários
+* editar ou excluir seus próprios comentários, conforme regra do sistema
 
 ---
 
-### Post
+## Padronização de Respostas
 
-* titulo
-* descricao
-* status (rascunho | publicado | arquivado)
-* autor (referência ao User)
-* dtCriacao
-* dtAtualizacao
+A API utiliza respostas padronizadas para facilitar o consumo pelo frontend web e pelo aplicativo mobile.
+
+As respostas seguem um padrão com:
+
+* `success`
+* `message`
+* `data`
+
+Exemplo de resposta de sucesso:
+
+```json
+{
+  "success": true,
+  "message": "Operação realizada com sucesso.",
+  "data": {}
+}
+```
+
+Exemplo de resposta de erro:
+
+```json
+{
+  "success": false,
+  "message": "Erro ao realizar operação."
+}
+```
 
 ---
 
-## 🔗 Rotas principais
+## Principais Rotas
 
 ### Autenticação
 
+```txt
 POST /auth/login
+```
+
+Realiza login e retorna o token JWT.
 
 ---
 
 ### Posts
 
+```txt
 GET /posts
 GET /posts/:id
-POST /post
-PUT /post/:id
-DELETE /post/:id
+POST /posts
+PUT /posts/:id
+DELETE /posts/:id
+```
+
+Funcionalidades:
+
+* listar posts
+* buscar post por id
+* criar post
+* editar post
+* excluir post
+* controlar status de publicação
 
 ---
 
-## ⚙️ Como executar
+### Usuários
 
-Na pasta `backend`, execute:
+```txt
+GET /users
+GET /users/:id
+POST /users
+PUT /users/:id
+DELETE /users/:id
+```
 
-npm install
-npm run dev
+Funcionalidades:
 
-A API ficará disponível em:
-
-[http://localhost:3000](http://localhost:3000)
+* listar usuários
+* buscar usuário por id
+* criar usuário
+* editar usuário
+* excluir usuário
+* diferenciar professores e alunos
 
 ---
 
-## 🔧 Variáveis de ambiente
+### Comentários
 
-Crie um arquivo `.env` na raiz do backend:
+```txt
+GET /comments/:postId
+POST /comments
+PUT /comments/:id
+DELETE /comments/:id
+```
 
+Funcionalidades:
+
+* listar comentários de um post
+* criar comentário
+* editar comentário
+* excluir comentário
+
+---
+
+## Variáveis de Ambiente
+
+Crie um arquivo `.env` dentro da pasta `backend/`.
+
+Exemplo:
+
+```env
+PORT=3000
+MONGO_URI=sua_string_de_conexao_mongodb
 JWT_SECRET=sua_chave_secreta
+```
 
 ---
 
-## 🧪 Usuários de teste
+## Como Executar
 
-### Professor
+### Instalar dependências
 
-Email: [professor@teste.com](mailto:professor@teste.com)
-Senha: 123456
+```bash
+cd backend
+npm install
+```
 
-### Aluno
+### Executar em modo desenvolvimento
 
-Email: [aluno@teste.com](mailto:aluno@teste.com)
-Senha: 123456
+```bash
+npm run dev
+```
 
-*(Certifique-se de que as senhas estejam salvas com hash no banco)*
+### Executar em modo produção/local
+
+```bash
+npm start
+```
+
+A API será executada por padrão em:
+
+```txt
+http://localhost:3000
+```
+
+---
+
+## Testes
+
+O backend possui testes automatizados com Jest e Supertest.
+
+Os testes cobrem pontos como:
+
+* autenticação
+* middleware de autenticação
+* posts
+* usuários
+* comentários
+* padronização de respostas
+* regras de permissão
+
+### Executar testes
+
+```bash
+npm test
+```
 
 ---
 
-## 🔐 Segurança
+## Integração com Frontend e Mobile
 
-* Senhas armazenadas com hash (bcrypt)
-* Autenticação via token JWT
-* Rotas protegidas por middleware
-* Dados sensíveis não retornados (ex: senha)
+O backend é consumido por:
+
+* aplicação web em React
+* aplicativo mobile em React Native com Expo
+
+Ambas as interfaces utilizam os mesmos endpoints REST.
+
+Rotas protegidas exigem envio do token JWT no header da requisição:
+
+```txt
+Authorization: Bearer <token>
+```
 
 ---
 
-## 📌 Observações
+## Observações
 
-* O campo `autor` do post é definido automaticamente a partir do usuário autenticado
-* O frontend não envia o autor
-* O populate é utilizado para retornar dados do usuário nos posts
-* A API segue padrão REST
+* O backend precisa estar em execução para que o frontend web e o aplicativo mobile funcionem corretamente.
+* O mobile deve utilizar o IP local da máquina no `.env`, não `localhost`, quando executado em celular físico.
+* As permissões são validadas no backend, mesmo que também existam bloqueios visuais no frontend e no mobile.
+* O professor possui permissões administrativas.
+* O aluno possui permissões limitadas de leitura e interação.
 
 ---
+
+## Status
+
+O backend possui:
+
+* API REST estruturada
+* autenticação JWT
+* controle de acesso por perfil
+* CRUD de posts
+* CRUD de usuários
+* comentários em posts
+* respostas padronizadas
+* testes automatizados
+* integração com frontend web e aplicativo mobile
