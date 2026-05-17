@@ -1,72 +1,249 @@
-import { View, Text, Pressable, StyleSheet } from "react-native"
+import { useEffect, useMemo, useState } from "react"
+import { ActivityIndicator, FlatList } from "react-native"
 import { router } from "expo-router"
+import styled from "styled-components/native"
 import { useAuth } from "../src/context/AuthContext"
+import { usePosts } from "../src/context/PostsContext"
+
+
+const Container = styled.View`
+  flex: 1;
+  padding: 20px;
+  background-color: #ffffff;
+`
+
+const TopBar = styled.View`
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+`
+
+const UserInfo = styled.View`
+  flex: 1;
+`
+
+const Title = styled.Text`
+  font-size: 24px;
+  font-weight: bold;
+  color: #1f2937;
+`
+
+const Subtitle = styled.Text`
+  margin-top: 4px;
+  font-size: 13px;
+  color: #6b7280;
+`
+
+const LogoutButton = styled.Pressable`
+  background-color: #ff7900;
+  padding: 8px 14px;
+  border-radius: 8px;
+`
+
+const LogoutText = styled.Text`
+  color: #ffffff;
+  font-weight: bold;
+`
+
+const SearchInput = styled.TextInput`
+  border-width: 1px;
+  border-color: #d1d5db;
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 15px;
+  margin-bottom: 16px;
+`
+
+const PostCard = styled.Pressable`
+  background-color: #fff7ef;
+  border-width: 1px;
+  border-color: #ffd6ad;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 12px;
+`
+
+const PostHeader = styled.View`
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+`
+
+const PostTitle = styled.Text`
+  flex: 1;
+  font-size: 18px;
+  font-weight: bold;
+  color: #1f2937;
+`
+
+const StatusBadge = styled.View`
+  background-color: #ff7900;
+  padding: 4px 8px;
+  border-radius: 999px;
+`
+
+const StatusText = styled.Text`
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: capitalize;
+`
+
+const PostDescription = styled.Text`
+  font-size: 14px;
+  color: #374151;
+  line-height: 20px;
+  margin-bottom: 10px;
+`
+
+const PostAuthor = styled.Text`
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 600;
+`
+
+const CenterContent = styled.View`
+  align-items: center;
+  justify-content: center;
+  padding: 32px 0;
+`
+
+const LoadingText = styled.Text`
+  margin-top: 12px;
+  color: #6b7280;
+`
+
+const ErrorText = styled.Text`
+  color: #c0392b;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 12px;
+`
+
+const RetryButton = styled.Pressable`
+  background-color: #ff7900;
+  padding: 10px 18px;
+  border-radius: 8px;
+`
+
+const RetryText = styled.Text`
+  color: #ffffff;
+  font-weight: bold;
+`
+
+const EmptyText = styled.Text`
+  text-align: center;
+  color: #6b7280;
+  margin-top: 32px;
+`
+
 
 export default function HomeScreen() {
   const { user, role, logout } = useAuth()
+  const { posts, loading, error, fetchPosts } = usePosts()
+
+  const [searchTerm, setSearchTerm] = useState("")
+
+  useEffect(() => {
+    fetchPosts()
+  }, [])
+
+  const visiblePosts = useMemo(() => {
+    const roleFilteredPosts =
+      role === "aluno"
+        ? posts.filter((post) => post.status === "publicado")
+        : posts
+
+    return roleFilteredPosts.filter((post) => {
+      const search = searchTerm.toLowerCase()
+
+      const title = post.titulo?.toLowerCase() || ""
+      const description = post.descricao?.toLowerCase() || ""
+
+      return title.includes(search) || description.includes(search)
+    })
+  }, [posts, role, searchTerm])
 
   const handleLogout = async () => {
     await logout()
     router.replace("/")
   }
 
+  const renderPost = ({ item }) => (
+    <PostCard>
+      <PostHeader>
+        <PostTitle>{item.titulo}</PostTitle>
+
+        {role === "professor" && (
+          <StatusBadge>
+            <StatusText>{item.status}</StatusText>
+          </StatusBadge>
+        )}
+      </PostHeader>
+
+      <PostDescription numberOfLines={3}>
+        {item.descricao}
+      </PostDescription>
+
+      <PostAuthor>
+        Autor: {item.autor?.nome || item.autor?.email || "Não informado"}
+      </PostAuthor>
+    </PostCard>
+  )
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Mural de Posts</Text>
+    <Container>
+      <TopBar>
+        <UserInfo>
+          <Title>Mural de Posts</Title>
+          <Subtitle>
+            {user?.nome || user?.email || "Usuário"} • {role || "perfil"}
+          </Subtitle>
+        </UserInfo>
 
-      <View style={styles.card}>
-        <Text style={styles.label}>Usuário logado:</Text>
-        <Text style={styles.text}>{user?.nome || user?.email || "Usuário"}</Text>
+        <LogoutButton onPress={handleLogout}>
+          <LogoutText>Sair</LogoutText>
+        </LogoutButton>
+      </TopBar>
 
-        <Text style={styles.label}>Perfil:</Text>
-        <Text style={styles.text}>{role || "Não informado"}</Text>
-      </View>
+      <SearchInput
+        placeholder="Buscar por título ou descrição..."
+        value={searchTerm}
+        onChangeText={setSearchTerm}
+      />
 
-      <Pressable style={styles.button} onPress={handleLogout}>
-        <Text style={styles.buttonText}>Sair</Text>
-      </Pressable>
-    </View>
+      {loading && (
+        <CenterContent>
+          <ActivityIndicator size="large" color="#ff7900" />
+          <LoadingText>Carregando posts...</LoadingText>
+        </CenterContent>
+      )}
+
+      {!loading && error ? (
+        <CenterContent>
+          <ErrorText>{error}</ErrorText>
+
+          <RetryButton onPress={fetchPosts}>
+            <RetryText>Tentar novamente</RetryText>
+          </RetryButton>
+        </CenterContent>
+      ) : null}
+
+      {!loading && !error && (
+        <FlatList
+          data={visiblePosts}
+          keyExtractor={(item) => item._id}
+          renderItem={renderPost}
+          contentContainerStyle={{ paddingBottom: 24 }}
+          ListEmptyComponent={
+            <EmptyText>Nenhum post encontrado.</EmptyText>
+          }
+        />
+      )}
+    </Container>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#1f2937",
-    marginBottom: 16,
-  },
-  card: {
-    backgroundColor: "#fff7ef",
-    borderWidth: 1,
-    borderColor: "#ffd6ad",
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-  },
-  label: {
-    fontWeight: "bold",
-    color: "#374151",
-    marginTop: 8,
-  },
-  text: {
-    color: "#1f2937",
-    fontSize: 16,
-  },
-  button: {
-    backgroundColor: "#ff7900",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-})

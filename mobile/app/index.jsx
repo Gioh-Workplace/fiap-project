@@ -1,14 +1,64 @@
 import { useState } from "react"
-import {
-  View,
-  Text,
-  TextInput,
-  Pressable,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native"
+import { ActivityIndicator } from "react-native"
 import { router } from "expo-router"
+import styled from "styled-components/native"
 import { useAuth } from "../src/context/AuthContext"
+
+
+const Container = styled.View`
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background-color: #ffffff;
+`
+
+const Title = styled.Text`
+  font-size: 30px;
+  font-weight: bold;
+  color: #ff7900;
+  margin-bottom: 8px;
+`
+
+const Subtitle = styled.Text`
+  font-size: 16px;
+  color: #374151;
+  margin-bottom: 24px;
+`
+
+const ErrorText = styled.Text`
+  width: 100%;
+  color: #c0392b;
+  margin-bottom: 12px;
+  text-align: center;
+  font-weight: 600;
+`
+
+const Input = styled.TextInput`
+  width: 100%;
+  border-width: 1px;
+  border-color: #d1d5db;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  font-size: 16px;
+`
+
+const Button = styled.Pressable`
+  width: 100%;
+  background-color: #ff7900;
+  padding: 14px;
+  border-radius: 8px;
+  align-items: center;
+  margin-top: 8px;
+  opacity: ${({ $disabled }) => ($disabled ? 0.7 : 1)};
+`
+
+const ButtonText = styled.Text`
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 16px;
+`
 
 export default function LoginScreen() {
   const { login, isLoading } = useAuth()
@@ -45,21 +95,20 @@ export default function LoginScreen() {
 
   if (isLoading) {
     return (
-      <View style={styles.container}>
+      <Container>
         <ActivityIndicator size="large" color="#ff7900" />
-      </View>
+      </Container>
     )
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Fiap Blog</Text>
-      <Text style={styles.subtitle}>Acesse sua conta</Text>
+    <Container>
+      <Title>Fiap Blog</Title>
+      <Subtitle>Acesse sua conta</Subtitle>
 
-      {error ? <Text style={styles.error}>{error}</Text> : null}
+      {error ? <ErrorText>{error}</ErrorText> : null}
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
@@ -67,76 +116,16 @@ export default function LoginScreen() {
         keyboardType="email-address"
       />
 
-      <TextInput
-        style={styles.input}
+      <Input
         placeholder="Senha"
         value={senha}
         onChangeText={setSenha}
         secureTextEntry
       />
 
-      <Pressable
-        style={[styles.button, submitting && styles.buttonDisabled]}
-        onPress={handleLogin}
-        disabled={submitting}
-      >
-        <Text style={styles.buttonText}>
-          {submitting ? "Entrando..." : "Entrar"}
-        </Text>
-      </Pressable>
-    </View>
+      <Button onPress={handleLogin} disabled={submitting} $disabled={submitting}>
+        <ButtonText>{submitting ? "Entrando..." : "Entrar"}</ButtonText>
+      </Button>
+    </Container>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#fff",
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: "bold",
-    color: "#ff7900",
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#374151",
-    marginBottom: 24,
-  },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#d1d5db",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 12,
-    fontSize: 16,
-  },
-  button: {
-    width: "100%",
-    backgroundColor: "#ff7900",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-    marginTop: 8,
-  },
-  buttonDisabled: {
-    opacity: 0.7,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-  },
-  error: {
-    width: "100%",
-    color: "#c0392b",
-    marginBottom: 12,
-    textAlign: "center",
-    fontWeight: "600",
-  },
-})
