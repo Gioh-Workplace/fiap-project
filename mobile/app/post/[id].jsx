@@ -4,6 +4,7 @@ import { router, useLocalSearchParams } from "expo-router"
 import styled from "styled-components/native"
 import { useAuth } from "../../src/context/AuthContext"
 import { usePosts } from "../../src/context/PostsContext"
+import CommentsSection from "../../src/components/CommentsSection"
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -183,6 +184,7 @@ export default function PostDetailsScreen() {
 
           <Description>{selectedPost.descricao}</Description>
         </Card>
+        <CommentsSection postId={id} />
       </Content>
     </Container>
   )
