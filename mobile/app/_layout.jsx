@@ -9,6 +9,7 @@ export default function RootLayout() {
         <Stack>
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="home" options={{ title: "Fiap Blog" }} />
+          <Stack.Screen name="post/[id]" options={{ title: "Post" }} />
         </Stack>
       </PostsProvider>
     </AuthProvider>

@@ -5,7 +5,6 @@ import styled from "styled-components/native"
 import { useAuth } from "../src/context/AuthContext"
 import { usePosts } from "../src/context/PostsContext"
 
-
 const Container = styled.View`
   flex: 1;
   padding: 20px;
@@ -174,7 +173,7 @@ export default function HomeScreen() {
   }
 
   const renderPost = ({ item }) => (
-    <PostCard>
+    <PostCard onPress={() => router.push(`/post/${item._id}`)}>
       <PostHeader>
         <PostTitle>{item.titulo}</PostTitle>
 
