@@ -140,6 +140,25 @@ const EmptyText = styled.Text`
   margin-top: 32px;
 `
 
+const ActionsHeader = styled.View`
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+`
+
+const CreateButton = styled.Pressable`
+  background-color: #fff7ef;
+  border-width: 1px;
+  border-color: #ffd6ad;
+  padding: 8px 12px;
+  border-radius: 8px;
+`
+
+const CreateButtonText = styled.Text`
+  color: #ff7900;
+  font-weight: bold;
+`
+
 
 export default function HomeScreen() {
   const { user, role, logout } = useAuth()
@@ -173,7 +192,7 @@ export default function HomeScreen() {
   }
 
   const renderPost = ({ item }) => (
-    <PostCard onPress={() => router.push(`/post/${item._id}`)}>
+    <PostCard onPress={() => router.push(`/posts/${item._id}`)}>
       <PostHeader>
         <PostTitle>{item.titulo}</PostTitle>
 
@@ -204,9 +223,17 @@ export default function HomeScreen() {
           </Subtitle>
         </UserInfo>
 
-        <LogoutButton onPress={handleLogout}>
-          <LogoutText>Sair</LogoutText>
-        </LogoutButton>
+        <ActionsHeader>
+              {role === "professor" && (
+                <CreateButton onPress={() => router.push("/posts/create")}>
+                  <CreateButtonText>Novo</CreateButtonText>
+                </CreateButton>
+              )}
+
+              <LogoutButton onPress={handleLogout}>
+                <LogoutText>Sair</LogoutText>
+              </LogoutButton>
+        </ActionsHeader>
       </TopBar>
 
       <SearchInput

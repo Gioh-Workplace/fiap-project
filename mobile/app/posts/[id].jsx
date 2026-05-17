@@ -110,10 +110,43 @@ const RetryText = styled.Text`
   font-weight: bold;
 `
 
+const Actions = styled.View`
+  flex-direction: row;
+  gap: 10px;
+  margin-bottom: 16px;
+`
+
+const EditButton = styled.Pressable`
+  flex: 1;
+  background-color: #ff7900;
+  padding: 12px;
+  border-radius: 8px;
+  align-items: center;
+`
+
+const EditButtonText = styled.Text`
+  color: #ffffff;
+  font-weight: bold;
+`
+
+const DeleteButton = styled.Pressable`
+  flex: 1;
+  background-color: #fee2e2;
+  padding: 12px;
+  border-radius: 8px;
+  align-items: center;
+`
+
+const DeleteButtonText = styled.Text`
+  color: #c0392b;
+  font-weight: bold;
+`
+
 export default function PostDetailsScreen() {
   const { id } = useLocalSearchParams()
   const { role } = useAuth()
-  const { selectedPost, loading, error, fetchPostById } = usePosts()
+  const { selectedPost, loading, error, fetchPostById, deletePost } = usePosts()
+
 
   useEffect(() => {
     if (id) {
@@ -160,12 +193,33 @@ export default function PostDetailsScreen() {
     )
   }
 
+  const handleDeletePost = async () => {
+    try {
+      await deletePost(id)
+      router.replace("/home")
+    } catch (err) {
+      console.error("Erro ao excluir post:", err)
+    }
+  }
+
   return (
     <Container>
       <Content>
         <BackButton onPress={() => router.back()}>
           <BackButtonText>Voltar</BackButtonText>
         </BackButton>
+        {role === "professor" && (
+          <Actions>
+              <EditButton onPress={() => router.push(`/posts/${id}/edit`)}>
+                <EditButtonText>Editar</EditButtonText>
+              </EditButton>
+
+              <DeleteButton onPress={handleDeletePost}>
+                <DeleteButtonText>Excluir</DeleteButtonText>
+              </DeleteButton>
+          </Actions>
+        )}
+
 
         <Card>
           <Header>
