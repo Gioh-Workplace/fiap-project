@@ -3,6 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context"
 import styled from "styled-components/native"
 import { useAuth } from "../context/AuthContext"
 import { getRoleColor } from "../utils/colors"
+import { useViewMode } from "../context/ViewModeContext"
 
 const SafeContainer = styled(SafeAreaView)`
   background-color: #ffffff;
@@ -80,6 +81,23 @@ const LogoutText = styled.Text`
   font-weight: bold;
 `
 
+const ModeButton = styled.Pressable`
+  background-color: ${({ $isAdminView }) =>
+    $isAdminView ? "#eff6ff" : "#fff7ef"};
+  border-width: 1px;
+  border-color: ${({ $isAdminView }) =>
+    $isAdminView ? "#2563eb" : "#ff7900"};
+  padding: 9px 12px;
+  border-radius: 10px;
+`
+
+const ModeText = styled.Text`
+  color: ${({ $isAdminView }) =>
+    $isAdminView ? "#2563eb" : "#ff7900"};
+  font-weight: bold;
+  font-size: 12px;
+`
+
 export default function AppHeader({
   title,
   subtitle,
@@ -87,11 +105,22 @@ export default function AppHeader({
   showLogout = true,
 }) {
   const { user, role, logout } = useAuth()
+  const { isAdminView, toggleViewMode } = useViewMode()
   const roleColors = getRoleColor(role)
 
   const handleLogout = async () => {
     await logout()
     router.replace("/")
+  }
+
+  const handleToggleViewMode = () => {
+    const wasAdminView = isAdminView
+  
+    toggleViewMode()
+  
+    if (wasAdminView) {
+      router.replace("/home")
+    }
   }
 
   return (
@@ -116,6 +145,15 @@ export default function AppHeader({
             )}
           </SubtitleRow>
         </Info>
+
+        {role === "professor" && showLogout && (
+          <ModeButton $isAdminView={isAdminView} onPress={handleToggleViewMode}>
+            <ModeText $isAdminView={isAdminView}>
+              {isAdminView ? "Admin" : "Padrão"}
+            </ModeText>
+          </ModeButton>
+        )}    
+
 
         {showLogout && (
           <LogoutButton onPress={handleLogout}>

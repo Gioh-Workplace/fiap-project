@@ -8,6 +8,7 @@ import { useCallback, useMemo, useState } from "react"
 import AppHeader from "../../src/components/AppHeader"
 import BottomNav from "../../src/components/BottomNav"
 import { getRoleColor } from "../../src/utils/colors"
+import { useViewMode } from "../../src/context/ViewModeContext"
 
 const Container = styled.View`
   flex: 1;
@@ -35,27 +36,6 @@ const FilterRow = styled.View`
   gap: 8px;
   margin-bottom: 16px;
 `
-
-const getFilterColor = (filter) => {
-    if (filter === "professor") {
-      return "#2563eb"
-    }
-    else if(filter === "aluno"){
-    return "#ff7900"
-    }
-    return "#50ba85"
-  }
-  
-  const getFilterBackground = (filter) => {
-    if (filter === "professor") {
-        return "#eff6ff"
-      }
-      else if(filter === "aluno"){
-      return "#fff7ef"
-      }
-      return "#dbffed"
-
-  }
   
   const FilterButton = styled.Pressable`
     flex: 1;
@@ -187,6 +167,27 @@ const Screen = styled.View`
   background-color: #ffffff;
 `
 
+const getFilterColor = (filter) => {
+  if (filter === "professor") {
+    return "#2563eb"
+  }
+  else if(filter === "aluno"){
+  return "#ff7900"
+  }
+  return "#50ba85"
+}
+
+const getFilterBackground = (filter) => {
+  if (filter === "professor") {
+      return "#eff6ff"
+    }
+    else if(filter === "aluno"){
+    return "#fff7ef"
+    }
+    return "#dbffed"
+
+}
+
 
 
 export default function UsersScreen() {
@@ -196,6 +197,9 @@ export default function UsersScreen() {
   const [filter, setFilter] = useState("todos")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const { isAdminView } = useViewMode()
+
+  
 
   const fetchUsers = async () => {
     try {
@@ -295,11 +299,15 @@ export default function UsersScreen() {
     )
   }
 
-  if (role !== "professor") {
+  if (role !== "professor" || !isAdminView) {
     return (
-      <CenterContent>
-        <ErrorText>Acesso negado.</ErrorText>
-      </CenterContent>
+      <Screen>
+        <AppHeader title="Usuários" />
+  
+        <Container>
+          <ErrorText>Acesse o modo Admin para gerenciar usuários.</ErrorText>
+        </Container>
+      </Screen>
     )
   }
 

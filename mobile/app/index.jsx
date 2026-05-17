@@ -34,7 +34,10 @@ const ErrorText = styled.Text`
   font-weight: 600;
 `
 
-const Input = styled.TextInput`
+const Input = styled.TextInput.attrs({
+  underlineColorAndroid: "transparent",
+  placeholderTextColor: "#9ca3af",
+})`
   width: 100%;
   border-width: 1px;
   border-color: #d1d5db;
@@ -42,6 +45,8 @@ const Input = styled.TextInput`
   padding: 12px;
   margin-bottom: 12px;
   font-size: 16px;
+  background-color: #ffffff;
+  color: #1f2937;
 `
 
 const Button = styled.Pressable`

@@ -5,6 +5,12 @@ import styled from "styled-components/native"
 import { useAuth } from "../../../src/context/AuthContext"
 import { usePosts } from "../../../src/context/PostsContext"
 import AppHeader from "../../../src/components/AppHeader"
+import { getPostColor } from "../../../src/utils/colors"
+
+const Screen = styled.View`
+  flex: 1;
+  background-color: #ffffff;
+`
 
 const Container = styled.ScrollView`
   flex: 1;
@@ -15,17 +21,10 @@ const Content = styled.View`
   padding: 20px;
 `
 
-const Title = styled.Text`
-  font-size: 26px;
-  font-weight: bold;
-  color: #1f2937;
-  margin-bottom: 16px;
-`
-
 const FormCard = styled.View`
-  background-color: #fff7ef;
+  background-color: ${({ $colors }) => $colors.background};
   border-width: 1px;
-  border-color: #ffd6ad;
+  border-color: ${({ $colors }) => $colors.border};
   border-radius: 14px;
   padding: 16px;
 `
@@ -71,8 +70,8 @@ const StatusButton = styled.Pressable`
   border-radius: 8px;
   align-items: center;
   border-width: 1px;
-  border-color: ${({ $active }) => ($active ? "#ff7900" : "#d1d5db")};
-  background-color: ${({ $active }) => ($active ? "#ff7900" : "#ffffff")};
+  border-color: ${({ $active }) => ($active ? "#2563eb" : "#d1d5db")};
+  background-color: ${({ $active }) => ($active ? "#2563eb" : "#ffffff")};
 `
 
 const StatusText = styled.Text`
@@ -83,7 +82,7 @@ const StatusText = styled.Text`
 `
 
 const PrimaryButton = styled.Pressable`
-  background-color: #ff7900;
+  background-color: #2563eb;
   padding: 14px;
   border-radius: 8px;
   align-items: center;
@@ -92,9 +91,9 @@ const PrimaryButton = styled.Pressable`
 
 const SecondaryButton = styled.Pressable`
   margin-top: 10px;
-  background-color: transparent;
+  background-color: #ffffff;
   border-width: 1px;
-  border-color: #ffd6ad;
+  border-color: ${({ $colors }) => $colors.border};
   padding: 12px;
   border-radius: 8px;
   align-items: center;
@@ -107,7 +106,7 @@ const ButtonText = styled.Text`
 `
 
 const SecondaryButtonText = styled.Text`
-  color: #ff7900;
+  color: #374151;
   font-weight: bold;
   font-size: 15px;
 `
@@ -132,11 +131,6 @@ const LoadingText = styled.Text`
   color: #6b7280;
 `
 
-const Screen = styled.View`
-  flex: 1;
-  background-color: #ffffff;
-`
-
 export default function EditPostScreen() {
   const { id } = useLocalSearchParams()
   const { role } = useAuth()
@@ -148,6 +142,8 @@ export default function EditPostScreen() {
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState("")
+
+  const postColor = getPostColor(id)
 
   useEffect(() => {
     async function loadPost() {
@@ -175,21 +171,21 @@ export default function EditPostScreen() {
 
   const handleSubmit = async () => {
     setError("")
-  
+
     if (!titulo.trim() || !descricao.trim()) {
       setError("Informe título e descrição.")
       return
     }
-  
+
     try {
       setSubmitting(true)
-  
+
       await updatePost(id, {
         titulo,
         descricao,
         status,
       })
-  
+
       if (router.canGoBack()) {
         router.back()
       } else {
@@ -205,79 +201,86 @@ export default function EditPostScreen() {
 
   if (role !== "professor") {
     return (
-      <CenterContent>
-        <ErrorText>Acesso negado.</ErrorText>
-      </CenterContent>
+      <Screen>
+        <AppHeader title="Editar Post" showBack />
+
+        <CenterContent>
+          <ErrorText>Acesso negado.</ErrorText>
+        </CenterContent>
+      </Screen>
     )
   }
 
   if (loading) {
     return (
-      <CenterContent>
-        <ActivityIndicator size="large" color="#ff7900" />
-        <LoadingText>Carregando post...</LoadingText>
-      </CenterContent>
+      <Screen>
+        <AppHeader title="Editar Post" showBack />
+
+        <CenterContent>
+          <ActivityIndicator size="large" color="#2563eb" />
+          <LoadingText>Carregando post...</LoadingText>
+        </CenterContent>
+      </Screen>
     )
   }
 
   return (
     <Screen>
       <AppHeader title="Editar Post" showBack />
-    <Container>
-      <Content>
-        
 
-        <FormCard>
-          {error ? <ErrorText>{error}</ErrorText> : null}
+      <Container>
+        <Content>
+          <FormCard $colors={postColor}>
+            {error ? <ErrorText>{error}</ErrorText> : null}
 
-          <Label>Título</Label>
-          <Input
-            placeholder="Digite o título"
-            value={titulo}
-            onChangeText={setTitulo}
-          />
+            <Label>Título</Label>
+            <Input
+              placeholder="Digite o título"
+              value={titulo}
+              onChangeText={setTitulo}
+            />
 
-          <Label>Descrição</Label>
-          <TextArea
-            placeholder="Digite a descrição do post"
-            value={descricao}
-            onChangeText={setDescricao}
-            multiline
-          />
+            <Label>Descrição</Label>
+            <TextArea
+              placeholder="Digite a descrição do post"
+              value={descricao}
+              onChangeText={setDescricao}
+              multiline
+            />
 
-          <Label>Status</Label>
-          <StatusRow>
-            {["rascunho", "publicado", "arquivado"].map((statusOption) => (
-              <StatusButton
-                key={statusOption}
-                $active={status === statusOption}
-                onPress={() => setStatus(statusOption)}
-              >
-                <StatusText $active={status === statusOption}>
-                  {statusOption}
-                </StatusText>
-              </StatusButton>
-            ))}
-          </StatusRow>
+            <Label>Status</Label>
+            <StatusRow>
+              {["rascunho", "publicado", "arquivado"].map((statusOption) => (
+                <StatusButton
+                  key={statusOption}
+                  $active={status === statusOption}
+                  onPress={() => setStatus(statusOption)}
+                >
+                  <StatusText $active={status === statusOption}>
+                    {statusOption}
+                  </StatusText>
+                </StatusButton>
+              ))}
+            </StatusRow>
 
-          <PrimaryButton
-            onPress={handleSubmit}
-            disabled={submitting}
-            $disabled={submitting}
-          >
-            {submitting ? (
-              <ActivityIndicator color="#ffffff" />
-            ) : (
-              <ButtonText>Salvar Alterações</ButtonText>
-            )}
-          </PrimaryButton>
+            <PrimaryButton
+              onPress={handleSubmit}
+              disabled={submitting}
+              $disabled={submitting}
+            >
+              {submitting ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <ButtonText>Salvar Alterações</ButtonText>
+              )}
+            </PrimaryButton>
 
-          <SecondaryButton onPress={() => router.back()}>
-            <SecondaryButtonText>Cancelar</SecondaryButtonText>
-          </SecondaryButton>
-        </FormCard>
-      </Content>
-    </Container>
+            <SecondaryButton $colors={postColor} onPress={() => router.back()}>
+              <SecondaryButtonText>Cancelar</SecondaryButtonText>
+            </SecondaryButton>
+          </FormCard>
+        </Content>
+      </Container>
     </Screen>
   )
 }
